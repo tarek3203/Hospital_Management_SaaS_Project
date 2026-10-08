@@ -88,7 +88,7 @@ services:
 
   queue-long:
     <<: *app
-    command: [bench, worker, --queue, long,default,short]
+    command: [bench, worker, --queue, "long,default,short"]
     environment: *redis-env
     depends_on:
       configurator:
@@ -96,7 +96,7 @@ services:
 
   queue-short:
     <<: *app
-    command: [bench, worker, --queue, short,default]
+    command: [bench, worker, --queue, "short,default"]
     environment: *redis-env
     depends_on:
       configurator:
