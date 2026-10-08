@@ -1,0 +1,17 @@
+# App image: base Frappe v16 bench (ERPNext + HRMS + Healthcare) plus our app.
+# Build the base first (see infrastructure/README.md), then from the repo root:
+#   docker build -f infrastructure/Containerfile -t hms/app:v16 .
+ARG BASE_IMAGE=hms/base:v16
+FROM ${BASE_IMAGE}
+
+# A Windows checkout of frappe_docker gives the entrypoints CRLF endings.
+USER root
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh /usr/local/bin/start.sh
+
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+
+COPY --chown=frappe:0 apps/hospital_saas apps/hospital_saas
+
+RUN ./env/bin/pip install --no-cache-dir -e apps/hospital_saas && \
+	ln -sfn /home/frappe/frappe-bench/apps/hospital_saas/hospital_saas/public assets/hospital_saas

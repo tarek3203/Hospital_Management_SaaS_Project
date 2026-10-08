@@ -1,0 +1,14 @@
+/* Light-touch brand accents on top of the standard Frappe desk */
+:root {
+	--hms-brand: #0e7c6b;
+}
+
+.navbar .app-logo {
+	max-height: 28px;
+}
+
+.btn-primary,
+.btn-primary:hover {
+	background-color: var(--hms-brand);
+	border-color: var(--hms-brand);
+}

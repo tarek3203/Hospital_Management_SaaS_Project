@@ -1,0 +1,16 @@
+# Local secrets
+infrastructure/.env
+
+# Upstream image recipes, cloned locally (see infrastructure/README.md)
+infrastructure/frappe_docker/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
