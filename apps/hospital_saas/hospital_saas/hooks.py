@@ -32,6 +32,13 @@ doc_events = {
 	},
 }
 
+scheduler_events = {
+	"cron": {
+		# Just after midnight, so the demo's "today" moves with the calendar.
+		"5 0 * * *": ["hospital_saas.demo.rolling_dates.roll_forward"],
+	},
+}
+
 override_whitelisted_methods = {
 	"frappe.core.doctype.user.user.update_password": "hospital_saas.demo_mode.update_password",
 }

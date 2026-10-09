@@ -50,6 +50,13 @@ Reset by hand at any time:
 docker exec -e DB_ROOT_PASSWORD=<db root password> hms-backend-1 bash /home/frappe/demo/reset.sh
 ```
 
+The demo data never goes stale: just after midnight (and after every reset)
+all dates in the hospital data move forward so the day the data was generated
+for is always today. The seeder records that day as the `hms_demo_anchor`
+default. Calendar setup (fiscal years, holiday lists, leave and payroll
+periods) is not moved. Weekdays do drift, so a seeded booking can land on a
+Friday.
+
 While demo mode is on, demo accounts cannot change their password, email,
 roles, role profiles or enabled flag, cannot be renamed or deleted, and
 password reset links are refused. Each reset also deletes visitor uploads and

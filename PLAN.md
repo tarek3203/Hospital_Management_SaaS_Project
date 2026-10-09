@@ -194,8 +194,8 @@ So prospects can try every role, like the Smart Hospital demo:
 - [x] Scheduled reset: `infrastructure/demo/snapshot.sh` saves the clean
       state, the `demo-reset` compose service (profile `demo`) restores it every
       `RESET_INTERVAL_HOURS` (default 6, takes ~20 s)
-- [ ] Rolling dates: shift demo dates daily so "today's" queue, admissions and
-      appointments always look current (Phase 8)
+- [x] Rolling dates: demo dates shift daily so "today's" queue, admissions and
+      appointments always look current
 - [ ] Demo data volume per module, added as each module lands (blood bank
       stock, ambulance calls, visitors, births, OT bookings, ...)
 
@@ -222,8 +222,9 @@ walkthrough update. Estimates assume one developer with AI assistance.
       show / cancel)
 - [x] Menu items not yet on `/hms` open the matching Desk page, or a "being
       built" page naming the phase
-- [ ] Rolling demo dates (moved up from Phase 8: "today" goes stale a day
-      after seeding, which hurts the demo)
+- [x] Rolling demo dates (moved up from Phase 8): every night and after each
+      reset, all hospital data dates shift forward so the seeded "today" is
+      always today (`hospital_saas/demo/rolling_dates.py`)
 
 ### Phase 2: Clinical core (3 weeks)
 - OPD patient page (visits, prescription, vitals, symptoms, ICD-10, findings,
@@ -264,7 +265,7 @@ walkthrough update. Estimates assume one developer with AI assistance.
   (Hindi, Spanish, Indonesian, Portuguese, Arabic with right-to-left, French,
   Turkish, Russian)
 - Theme studio
-- Rolling demo dates, final demo data pass, role-by-role regression run
+- Final demo data pass, role-by-role regression run
 
 ### Phase 9: Packaging for single-hospital install (1.5 weeks)
 - One-command Docker install, first-run setup wizard

@@ -14,6 +14,7 @@ from frappe.utils import add_days, add_months, flt, getdate, now_datetime, nowda
 from frappe.utils.password import update_password
 
 from hospital_saas.demo import data as D
+from hospital_saas.demo.rolling_dates import set_anchor
 from hospital_saas.install import apply_branding
 from hospital_saas.roles import demo_profile_name, setup_roles
 
@@ -39,6 +40,7 @@ def run():
 		setup_staff,
 		setup_users,
 		apply_branding,
+		set_anchor,
 	]
 	for step in steps:
 		print(f"-> {step.__name__}")

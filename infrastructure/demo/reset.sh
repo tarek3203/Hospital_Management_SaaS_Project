@@ -26,6 +26,8 @@ bench --site "$SITE" restore "$SNAP/db.sql.gz" \
 	--db-root-password "$DB_ROOT_PASSWORD" \
 	--force
 bench --site "$SITE" set-config hms_demo_mode 1
+# Move the snapshot's dates forward so "today" in the data is today.
+bench --site "$SITE" execute hospital_saas.demo.rolling_dates.roll_forward
 # Sessions in the snapshot and in Redis belong to earlier visitors.
 bench --site "$SITE" destroy-all-sessions
 bench --site "$SITE" clear-cache
