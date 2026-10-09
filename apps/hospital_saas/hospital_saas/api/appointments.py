@@ -5,6 +5,7 @@ from frappe import _
 from frappe.utils import cint, flt, getdate, nowdate
 
 from hospital_saas.billing import create_invoice, default_company
+from hospital_saas.utils import hhmm
 
 LIST_FIELDS = [
 	"name",
@@ -50,7 +51,7 @@ def get_appointments(
 		page_length=cint(page_length),
 	)
 	for row in rows:
-		row.appointment_time = str(row.appointment_time)[:5]
+		row.appointment_time = hhmm(row.appointment_time)
 	counts = dict(
 		frappe.get_list(
 			"Patient Appointment",
@@ -92,11 +93,11 @@ def get_slots(practitioner: str, date: str):
 		booked = {}
 		for appt in schedule["appointments"]:
 			if appt.get("appointment_time") is not None:
-				key = str(appt["appointment_time"])[:5]
+				key = hhmm(appt["appointment_time"])
 				booked[key] = booked.get(key, 0) + 1
 		capacity = cint(schedule["service_unit_capacity"]) if schedule["allow_overlap"] else 1
 		for slot in schedule["avail_slot"]:
-			time = str(slot.from_time)[:5]
+			time = hhmm(slot.from_time)
 			if day == now.date() and time <= now.strftime("%H:%M"):
 				continue
 			slots.append(

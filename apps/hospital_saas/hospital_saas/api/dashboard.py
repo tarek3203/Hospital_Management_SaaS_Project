@@ -8,6 +8,7 @@ import frappe
 from frappe.utils import add_days, flt, get_first_day, getdate, nowdate
 
 from hospital_saas.api.session import get_job
+from hospital_saas.utils import hhmm
 
 # Income module per invoice line: item_group decides, OPD/IPD split by item.
 IPD_ITEMS = ("IPD-VISIT", "GENERAL-WARD-BED", "PRIVATE-CABIN", "ICU-BED")
@@ -140,7 +141,7 @@ def todays_appointments(filters=None, limit=10):
 		limit=limit,
 	)
 	for r in rows:
-		r.appointment_time = str(r.appointment_time)[:5]
+		r.appointment_time = hhmm(r.appointment_time)
 	return {
 		"title": "Today's appointments",
 		"columns": [

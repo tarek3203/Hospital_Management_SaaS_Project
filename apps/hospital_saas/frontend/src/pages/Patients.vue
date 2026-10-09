@@ -17,7 +17,7 @@
 			</TextInput>
 		</div>
 
-		<DataTable :columns="columns" :rows="patients.data?.rows" empty-text="No patients found">
+		<DataTable :columns="columns" :rows="patients.data?.rows" clickable empty-text="No patients found" @row-click="(row) => router.push(`/opd/patient/${encodeURIComponent(row.name)}`)">
 			<template #cell-patient_name="{ row }">
 				<div>
 					<p class="font-medium text-gray-900">{{ row.patient_name }}</p>

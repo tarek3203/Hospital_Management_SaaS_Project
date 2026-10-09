@@ -25,7 +25,7 @@ MENU = [
 	{"key": "patients", "label": "Patient", "icon": "users", "jobs": STAFF, "route": "/patients"},
 	{"key": "billing", "label": "Billing", "icon": "file-text", "jobs": [SA, AD, DOC, PH, PATH, RAD, ACC, REC], "desk": "/desk/sales-invoice", "phase": 2},
 	{"key": "appointments", "label": "Appointment", "icon": "calendar", "jobs": [SA, AD, DOC, ACC, REC], "route": "/appointments"},
-	{"key": "opd", "label": "OPD - Out Patient", "icon": "activity", "jobs": STAFF, "desk": "/desk/patient-encounter", "phase": 2},
+	{"key": "opd", "label": "OPD - Out Patient", "icon": "activity", "jobs": STAFF, "route": "/opd"},
 	{"key": "ipd", "label": "IPD - In Patient", "icon": "layers", "jobs": STAFF, "desk": "/desk/inpatient-record", "phase": 2},
 	{"key": "pharmacy", "label": "Pharmacy", "icon": "package", "jobs": [SA, AD, PH, ACC, REC], "desk": "/desk/item?item_group=Pharmacy", "phase": 3},
 	{"key": "pathology", "label": "Pathology", "icon": "droplet", "jobs": [SA, AD, DOC, PATH, ACC, REC], "desk": "/desk/lab-test", "phase": 2},

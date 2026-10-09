@@ -79,6 +79,19 @@ DIAGNOSES = [
 	"Lumbar Spondylosis", "Allergic Rhinitis", "Urinary Tract Infection", "Bronchial Asthma",
 	"Acid Peptic Disease", "Osteoarthritis Knee", "Contact Dermatitis",
 ]
+ALLERGIES = ["Penicillin", "Sulfa drugs", "Dust", "Seafood", "Peanuts", "Pollen", "NSAIDs", "Latex", "Egg"]
+
+CLINICAL_NOTES = [
+	"Advised plenty of fluids and rest. Review after 5 days if symptoms persist.",
+	"Low salt, low fat diet advised. Continue regular walking for 30 minutes.",
+	"Explained the condition and medicines. Return immediately if fever exceeds 103 F.",
+	"Blood sugar log to be maintained. Follow up with reports in 2 weeks.",
+	"Avoid oily and spicy food. Take medicines after meals.",
+	"Physiotherapy advised. Avoid lifting heavy weights.",
+	"Steam inhalation twice daily. Avoid cold drinks.",
+	"Check blood pressure at home morning and evening and bring the readings.",
+]
+
 COMPLAINTS = [
 	"Fever", "Headache", "Cough", "Chest Pain", "Abdominal Pain", "Shortness of Breath",
 	"Joint Pain", "Back Pain", "Skin Rash", "Dizziness", "Vomiting", "Fatigue",

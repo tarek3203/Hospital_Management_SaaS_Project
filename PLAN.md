@@ -227,8 +227,18 @@ walkthrough update. Estimates assume one developer with AI assistance.
       always today (`hospital_saas/demo/rolling_dates.py`)
 
 ### Phase 2: Clinical core (3 weeks)
-- OPD patient page (visits, prescription, vitals, symptoms, ICD-10, findings,
-  lab/radiology orders, charges, payments) and prescription print
+- [x] OPD list (`/hms/opd`), OPD patient page (overview with medical history,
+  allergies, symptoms, diagnoses, consultants; visits; lab investigation;
+  treatment history; timeline with notes; vitals) and OPD visit page
+  (overview with billing progress, medication, lab investigation, charges,
+  payments with "Add payment", timeline, vitals)
+- [x] Doctor consultation on the visit: symptoms, diagnosis (free text adds
+  new masters), medicines with dose/duration/form/instruction, lab orders,
+  advice; save draft or complete the visit
+- [x] Record vitals (nurse, receptionist, doctor); patient numbers
+  HLC-PAT-YYYY-#####; structured symptoms/diagnoses/allergies in demo data;
+  today's queue billed
+- [ ] Prescription print, ICD-10 codes and findings masters, radiology orders
 - IPD patient page (nurse notes, medication chart, bed transfer, IPD charges,
   discharge summary), visual bed board
 - Radiology module (orders, report templates, images)

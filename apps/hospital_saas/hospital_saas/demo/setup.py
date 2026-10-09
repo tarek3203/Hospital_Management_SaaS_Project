@@ -39,6 +39,9 @@ def run():
 		setup_inpatients,
 		setup_staff,
 		setup_users,
+		setup_patient_ids,
+		enrich_clinical_data,
+		bill_todays_queue,
 		apply_branding,
 		set_anchor,
 	]
@@ -179,6 +182,7 @@ def setup_healthcare_settings():
 	settings.update(
 		{
 			"link_customer_to_patient": 1,
+			"patient_name_by": "Naming Series",
 			"show_payment_popup": 0,
 			"collect_registration_fee": 0,
 			"op_consulting_charge_item": "OPD-CONSULT",
@@ -563,8 +567,9 @@ def complete_visit(appt, doctor):
 			"company": D.COMPANY,
 			"encounter_date": day,
 			"encounter_time": visit_dt.time(),
-			"encounter_comment": f"Provisional diagnosis: {rng.choice(D.DIAGNOSES)}. "
-			f"Presenting complaint: {', '.join(rng.sample(D.COMPLAINTS, 2))}.",
+			"encounter_comment": rng.choice(D.CLINICAL_NOTES),
+			"symptoms": [{"complaint": c} for c in rng.sample(D.COMPLAINTS, 2)],
+			"diagnosis": [{"diagnosis": rng.choice(D.DIAGNOSES)}],
 			"drug_prescription": [
 				{
 					"drug_code": code,
@@ -811,3 +816,78 @@ def setup_patient_user(email):
 	user.save(ignore_permissions=True)  # recompute user_type from roles
 	update_password(email, D.DEMO_PASSWORD)
 	frappe.db.set_value("Patient", patient, "user_id", email)
+
+
+# ---------------------------------------------------------------- polish
+
+
+def setup_patient_ids():
+	"""Give every patient a hospital number (HLC-PAT-YYYY-#####) instead of their name."""
+	from frappe.model.naming import make_autoname
+
+	frappe.db.set_single_value("Healthcare Settings", "patient_name_by", "Naming Series")
+	for name in frappe.get_all("Patient", filters={"name": ["not like", "HLC-PAT-%"]}, order_by="creation asc", pluck="name"):
+		frappe.rename_doc("Patient", name, make_autoname("HLC-PAT-.YYYY.-.#####"), force=True, show_alert=False)
+	frappe.db.commit()
+
+
+def enrich_clinical_data():
+	"""Structured symptoms, diagnoses, allergies and a few walk-ins registered today.
+
+	Stage 0 encounters kept these as free text; the OPD pages show them as lists.
+	"""
+	encounters = frappe.get_all("Patient Encounter", filters={"docstatus": 1}, fields=["name", "encounter_comment"])
+	for enc in encounters:
+		if frappe.db.exists("Patient Encounter Symptom", {"parent": enc.name}):
+			continue
+		comment = enc.encounter_comment or ""
+		diagnosis = next((d for d in D.DIAGNOSES if d in comment), rng.choice(D.DIAGNOSES))
+		complaints = [c for c in D.COMPLAINTS if c in comment] or rng.sample(D.COMPLAINTS, 2)
+		for idx, complaint in enumerate(complaints, 1):
+			add_child(enc.name, "symptoms", "Patient Encounter Symptom", idx, complaint=complaint)
+		add_child(enc.name, "diagnosis", "Patient Encounter Diagnosis", 1, diagnosis=diagnosis)
+		frappe.db.set_value("Patient Encounter", enc.name, "encounter_comment", rng.choice(D.CLINICAL_NOTES), update_modified=False)
+
+	for patient in frappe.get_all("Patient", filters={"allergies": ["in", ["", None]]}, pluck="name"):
+		if rng.random() < 0.35:
+			frappe.db.set_value("Patient", patient, "allergies", ", ".join(rng.sample(D.ALLERGIES, rng.choice([1, 1, 2]))), update_modified=False)
+
+	# Walk-ins registered this morning, so "new patients today" is not zero.
+	if not frappe.db.count("Patient", {"creation": [">=", nowdate()]}):
+		for i in range(3):
+			gender = "Female" if i % 2 else "Male"
+			patient = frappe.get_doc(
+				{
+					"doctype": "Patient",
+					"first_name": rng.choice(D.FEMALE_FIRST if gender == "Female" else D.MALE_FIRST),
+					"last_name": rng.choice(D.LAST_NAMES),
+					"sex": gender,
+					"dob": add_days(add_months(nowdate(), -12 * rng.randint(20, 60)), -rng.randint(0, 360)),
+					"blood_group": rng.choice(D.BLOOD_GROUPS),
+					"mobile": random_phone(),
+					"patient_details": f"Address: {rng.choice(D.AREAS)}",
+				}
+			).insert(ignore_permissions=True)
+			set_creation(patient, datetime.combine(getdate(), time(9 + i, 10)))
+
+
+def add_child(parent, parentfield, doctype, idx, **values):
+	row = frappe.get_doc(
+		{"doctype": doctype, "parent": parent, "parenttype": "Patient Encounter", "parentfield": parentfield, "idx": idx, **values}
+	)
+	row.name = frappe.generate_hash(length=10)
+	row.db_insert()
+
+
+def bill_todays_queue():
+	"""Today's patients paid the consultation fee at the front desk, as in a real OPD."""
+	appointments = frappe.get_all(
+		"Patient Appointment",
+		filters={"appointment_date": nowdate(), "invoiced": 0, "status": ["!=", "Cancelled"]},
+		fields=["name", "patient", "practitioner"],
+	)
+	for appt in appointments:
+		fee = flt(frappe.db.get_value("Healthcare Practitioner", appt.practitioner, "op_consulting_charge"))
+		invoice = make_invoice(appt.patient, getdate(), [{"item_code": "OPD-CONSULT", "qty": 1, "rate": fee}], paid=rng.random() > 0.15)
+		paid = fee - flt(frappe.db.get_value("Sales Invoice", invoice, "outstanding_amount"))
+		frappe.db.set_value("Patient Appointment", appt.name, {"invoiced": 1, "ref_sales_invoice": invoice, "paid_amount": paid})

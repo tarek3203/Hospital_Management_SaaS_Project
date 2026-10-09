@@ -29,7 +29,7 @@
 			</div>
 		</div>
 
-		<DataTable :columns="columns" :rows="appointments.data?.rows" empty-text="No appointments for this day">
+		<DataTable :columns="columns" :rows="appointments.data?.rows" clickable empty-text="No appointments for this day" @row-click="(row) => router.push(`/opd/visit/${encodeURIComponent(row.name)}`)">
 			<template #cell-patient_name="{ row }">
 				<p class="font-medium text-gray-900">{{ row.patient_name }}</p>
 				<p class="text-xs text-gray-500">{{ row.patient }}</p>
