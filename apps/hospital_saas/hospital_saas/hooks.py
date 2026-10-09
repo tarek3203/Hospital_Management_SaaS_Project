@@ -22,6 +22,8 @@ after_migrate = "hospital_saas.roles.setup_roles"
 doc_events = {
 	"User": {
 		"before_validate": "hospital_saas.demo_mode.protect_demo_user",
+		"validate": "hospital_saas.demo_mode.protect_demo_user_roles",
+		"before_rename": "hospital_saas.demo_mode.block_demo_user_rename",
 		"on_trash": "hospital_saas.demo_mode.block_demo_user_delete",
 	},
 }

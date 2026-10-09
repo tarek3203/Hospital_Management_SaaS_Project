@@ -45,7 +45,14 @@ docker exec -e DB_ROOT_PASSWORD=<db root password> hms-backend-1 bash /home/frap
 ```
 
 While demo mode is on, demo accounts cannot change their password, email,
-roles or enabled flag and cannot be deleted. Customer installs never set
+roles, role profiles or enabled flag, cannot be renamed or deleted, and
+password reset links are refused. Each reset also deletes visitor uploads and
+logs everyone out.
+
+Demo Super Admin and Admin use "Demo ..." role profiles without System
+Manager, Website Manager, Workspace Manager and Script Manager, because those
+roles let a visitor run script in other visitors' browsers (Client Script,
+Website Script, custom HTML). Customer installs get the full profiles. Customer installs never set
 `hms_demo_mode`, so none of this applies there.
 
 ## What's in the data

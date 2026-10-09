@@ -15,7 +15,7 @@ from frappe.utils.password import update_password
 
 from hospital_saas.demo import data as D
 from hospital_saas.install import apply_branding
-from hospital_saas.roles import setup_roles
+from hospital_saas.roles import demo_profile_name, setup_roles
 
 rng = random.Random(2026)
 
@@ -769,7 +769,7 @@ def setup_users():
 			}
 		)
 		user.set("roles", [])
-		user.set("role_profiles", [{"role_profile": profile}])
+		user.set("role_profiles", [{"role_profile": demo_profile_name(profile)}])
 		user.save(ignore_permissions=True)
 		employee = frappe.db.get_value("Employee", {"first_name": first, "last_name": last, "company": D.COMPANY})
 		if employee:

@@ -31,21 +31,53 @@ def get_demo_logins():
 	return logins
 
 
+LOCKED_MESSAGE = "Demo accounts cannot be changed. The demo resets automatically."
+LOCKED_FIELDS = ["enabled", "email", "user_type", "module_profile"]
+
+
+def demo_user_emails():
+	return {u[0] for u in D.DEMO_USERS}
+
+
+def is_protected(doc):
+	return (
+		is_demo_mode()
+		and frappe.session.user != "Administrator"
+		and not frappe.flags.in_demo
+		and doc.name in demo_user_emails()
+		and not doc.is_new()
+	)
+
+
 def protect_demo_user(doc, method=None):
-	"""User.before_validate hook (User.validate clears new_password before other hooks run)."""
-	if not is_demo_mode() or frappe.session.user == "Administrator" or frappe.flags.in_demo:
+	"""User.before_validate: User.validate clears new_password, so check it first."""
+	if not is_protected(doc):
 		return
-	if doc.name not in {u[0] for u in D.DEMO_USERS} or doc.is_new():
+	before = doc.get_doc_before_save()
+	profiles_changed = before and {r.role_profile for r in before.role_profiles} != {
+		r.role_profile for r in doc.role_profiles
+	}
+	if doc.new_password or profiles_changed or any(doc.has_value_changed(f) for f in LOCKED_FIELDS):
+		frappe.throw(_(LOCKED_MESSAGE))
+
+
+def protect_demo_user_roles(doc, method=None):
+	"""User.validate: runs after roles are rebuilt from role profiles, so this also
+	catches edits to a Role Profile that would cascade to demo accounts."""
+	if not is_protected(doc):
 		return
-	if doc.new_password or doc.has_value_changed("enabled") or doc.has_value_changed("email"):
-		frappe.throw(_("Demo accounts cannot be changed. The demo resets automatically."))
 	before = doc.get_doc_before_save()
 	if before and {r.role for r in before.roles} != {r.role for r in doc.roles}:
-		frappe.throw(_("Demo accounts cannot be changed. The demo resets automatically."))
+		frappe.throw(_(LOCKED_MESSAGE))
+
+
+def block_demo_user_rename(doc, method=None, *args, **kwargs):
+	if is_protected(doc):
+		frappe.throw(_(LOCKED_MESSAGE))
 
 
 def block_demo_user_delete(doc, method=None):
-	if is_demo_mode() and doc.name in {u[0] for u in D.DEMO_USERS} and frappe.session.user != "Administrator":
+	if is_protected(doc):
 		frappe.throw(_("Demo accounts cannot be deleted."))
 
 
@@ -54,6 +86,7 @@ def update_password(new_password, logout_all_sessions=0, key=None, old_password=
 	"""Wraps Frappe's change-password endpoint, which saves without User.validate."""
 	from frappe.core.doctype.user.user import update_password as frappe_update_password
 
-	if is_demo_mode() and frappe.session.user in {u[0] for u in D.DEMO_USERS}:
-		frappe.throw(_("Demo accounts cannot be changed. The demo resets automatically."))
+	# Reset links (key) are refused too: nobody on the public demo needs them.
+	if is_demo_mode() and (key or frappe.session.user in demo_user_emails()):
+		frappe.throw(_(LOCKED_MESSAGE))
 	return frappe_update_password(new_password, logout_all_sessions, key, old_password)

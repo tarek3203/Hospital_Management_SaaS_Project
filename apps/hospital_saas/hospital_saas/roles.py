@@ -52,6 +52,19 @@ ROLE_PROFILES = {
 	"Nurse": ["Nursing User", "Employee"],
 }
 
+# Roles a public demo visitor must never hold: they allow running code or
+# injecting script into pages other visitors load (Client Script, Website
+# Script, custom HTML, server settings). Demo logins use a "Demo <profile>"
+# copy of each profile without them; customer installs use the full profiles.
+DEMO_UNSAFE_ROLES = {"System Manager", "Website Manager", "Workspace Manager", "Script Manager"}
+
+
+def demo_profile_name(profile):
+	if DEMO_UNSAFE_ROLES & set(ROLE_PROFILES.get(profile, [])):
+		return f"Demo {profile}"
+	return profile
+
+
 # Extra access the standard roles do not give our custom roles.
 # doctype -> {role: [permission types]}
 PATIENT_READ = ["read", "report"]
@@ -75,13 +88,20 @@ def setup_roles():
 	# Patients use Healthcare's portal, never the Desk.
 	frappe.db.set_value("Role", "Patient", {"desk_access": 0, "home_page": "/patient-portal"})
 
+	profiles = dict(ROLE_PROFILES)
 	for profile, roles in ROLE_PROFILES.items():
+		if demo_profile_name(profile) != profile:
+			profiles[demo_profile_name(profile)] = [r for r in roles if r not in DEMO_UNSAFE_ROLES]
+
+	for profile, roles in profiles.items():
 		roles = [r for r in roles if frappe.db.exists("Role", r)]
 		doc = (
 			frappe.get_doc("Role Profile", profile)
 			if frappe.db.exists("Role Profile", profile)
 			else frappe.new_doc("Role Profile")
 		)
+		if not doc.is_new() and {r.role for r in doc.roles} == set(roles):
+			continue  # saving queues a job that re-saves every user on the profile
 		doc.role_profile = profile
 		doc.set("roles", [{"role": r} for r in roles])
 		doc.save(ignore_permissions=True)
