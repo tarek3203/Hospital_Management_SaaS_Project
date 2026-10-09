@@ -492,6 +492,8 @@ def make_advance(record, amount, mode_of_payment, reference_no=None, posting_dat
 @frappe.whitelist(methods=["POST"])
 def save_round(record: str, data: dict | str):
 	"""Doctor's ward round: a submitted encounter linked to the stay."""
+	from hospital_saas.api.lab import create_ordered_tests
+
 	data = frappe.parse_json(data)
 	doc = frappe.get_doc("Inpatient Record", record)
 	doc.check_permission("read")
@@ -523,6 +525,7 @@ def save_round(record: str, data: dict | str):
 	)
 	enc.insert()
 	enc.submit()
+	create_ordered_tests(enc)
 	return enc.name
 
 

@@ -47,7 +47,7 @@ ROLE_PROFILES = {
 		"Accounts User", "Employee",
 	],
 	"Pathologist": ["Pathologist", "Laboratory User", "LabTest Approver", "Employee"],
-	"Radiologist": ["Radiologist", "Laboratory User", "Employee"],
+	"Radiologist": ["Radiologist", "Laboratory User", "LabTest Approver", "Employee"],
 	"Accountant": [
 		"Accountant", "Accounts Manager", "Accounts User", "Sales User", "Purchase User", "Employee",
 	],
@@ -73,7 +73,10 @@ def demo_profile_name(profile):
 PATIENT_READ = ["read", "report"]
 EXTRA_PERMISSIONS = {
 	"Patient Encounter": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Receptionist", "Accountant", "Nursing User"]},
-	"Lab Test": {r: PATIENT_READ for r in ["Receptionist", "Accountant", "Nursing User", "Pharmacist", "Radiologist"]},
+	"Lab Test": {
+		**{r: PATIENT_READ for r in ["Accountant", "Nursing User", "Pharmacist", "Radiologist"]},
+		"Receptionist": ["read", "write", "create", "report", "print"],
+	},
 	"Patient Medical Record": {"Nursing User": ["read", "write", "create"]},
 	"Sales Invoice": {r: PATIENT_READ for r in ["Physician", "Pathologist", "Radiologist"]},
 	"Vital Signs": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},

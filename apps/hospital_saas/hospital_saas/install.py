@@ -5,9 +5,11 @@ LOGO = "/assets/hospital_saas/images/logo.svg"
 
 
 def after_install():
+	from hospital_saas.fixes import apply_fixes
 	from hospital_saas.roles import setup_roles
 
 	setup_roles()
+	apply_fixes()
 	apply_branding()
 
 

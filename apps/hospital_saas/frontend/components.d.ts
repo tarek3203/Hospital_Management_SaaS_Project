@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddTestDialog: typeof import('./src/components/AddTestDialog.vue')['default']
     AdmitDialog: typeof import('./src/components/AdmitDialog.vue')['default']
     AdvanceDialog: typeof import('./src/components/AdvanceDialog.vue')['default']
     AppSidebar: typeof import('./src/components/AppSidebar.vue')['default']

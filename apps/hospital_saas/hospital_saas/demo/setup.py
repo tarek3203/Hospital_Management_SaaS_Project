@@ -44,6 +44,7 @@ def run():
 		enrich_clinical_data,
 		bill_todays_queue,
 		enrich_inpatients,
+		setup_lab_worklists,
 		apply_branding,
 		set_anchor,
 	]
@@ -999,3 +1000,81 @@ def enrich_inpatients():
 			discharge(rec.name, summary="Condition improved. Continue medicines as advised and review in OPD.", followup_date=add_days(nowdate(), 7), mode_of_payment="Cash")
 			frappe.db.commit()
 
+
+
+def setup_lab_worklists():
+	"""Radiology templates and reports, and a live pending queue for both labs."""
+	from healthcare.healthcare.doctype.lab_test.lab_test import update_status
+
+	ensure("Item Group", "Radiology", item_group_name="Radiology", parent_item_group="All Item Groups")
+	ensure("Medical Department", "Radiology", department="Radiology")
+	for name, rate, particulars in D.RADIOLOGY_TESTS:
+		if frappe.db.exists("Lab Test Template", name):
+			continue
+		ensure(
+			"Lab Test Template",
+			lab_test_name=name,
+			lab_test_code=name.upper().replace(" ", "-")[:20],
+			lab_test_group="Radiology",
+			department="Radiology",
+			lab_test_template_type="Descriptive",
+			is_billable=1,
+			lab_test_rate=rate,
+			descriptive_test_templates=[{"particulars": p, "allow_blank": 1} for p, _ in particulars],
+		)
+
+	if frappe.db.exists("Lab Test", {"lab_test_group": "Radiology"}):
+		return
+	patients = frappe.get_all("Patient", pluck="name")
+	docs = practitioners()
+	findings = {name: dict(parts) for name, _r, parts in D.RADIOLOGY_TESTS}
+	approver = next((u[0] for u in D.DEMO_USERS if u[3] == "Radiologist"), None)
+
+	def new_test(template, day, complete):
+		patient = rng.choice(patients)
+		test = frappe.get_doc(
+			{
+				"doctype": "Lab Test",
+				"patient": patient,
+				"patient_sex": frappe.db.get_value("Patient", patient, "sex"),
+				"template": template,
+				"practitioner": rng.choice(docs).name,
+				"company": D.COMPANY,
+				"date": day,
+				"time": time(rng.randint(9, 19), rng.choice([0, 15, 30, 45])),
+			}
+		)
+		test.insert(ignore_permissions=True)
+		if complete:
+			for row in test.descriptive_test_items:
+				row.result_value = findings.get(template, {}).get(row.lab_test_particulars, "Within normal limits.")
+			for row in test.normal_test_items:
+				lab = next((x for x in D.LAB_TESTS if x[0] == template), None)
+				event = next((e for e in lab[3] if e[0] == row.lab_test_event), lab[3][0]) if lab else None
+				if event and event[3] is not None:
+					row.result_value = f"{rng.uniform(event[3], event[4]):.{event[5]}f}"
+				else:
+					row.result_value = "Negative"
+			test.result_date = day
+			test.save(ignore_permissions=True)
+			test.submit()
+		return test
+
+	# Radiology: four weeks of reports, most approved, plus today's queue.
+	for days_ago in range(28, 0, -1):
+		day = getdate(add_days(nowdate(), -days_ago))
+		for _ in range(rng.choice([0, 1, 1, 2])):
+			test = new_test(rng.choice(D.RADIOLOGY_TESTS)[0], day, True)
+			if rng.random() < 0.8:
+				update_status("Approved", test.name)
+				if approver:
+					frappe.db.set_value("Lab Test", test.name, "modified_by", approver, update_modified=False)
+	for i, (name, *_rest) in enumerate(rng.sample(D.RADIOLOGY_TESTS, 4)):
+		new_test(name, getdate(), i == 0)
+
+	# Pathology: today's samples waiting for results, and approve older reports.
+	for lab in rng.sample(D.LAB_TESTS, 5):
+		new_test(lab[0], getdate(), False)
+	for name in frappe.get_all("Lab Test", filters={"docstatus": 1, "status": "Completed", "lab_test_group": ["!=", "Radiology"]}, pluck="name"):
+		if rng.random() < 0.7:
+			update_status("Approved", name)

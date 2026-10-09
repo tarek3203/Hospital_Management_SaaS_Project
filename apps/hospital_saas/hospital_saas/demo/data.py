@@ -148,6 +148,36 @@ LAB_TESTS = [
 	("Serum TSH", "Biochemistry", 900, [("TSH", "mIU/L", "0.4 - 4.0 mIU/L", 0.5, 7.5, 2)]),
 ]
 
+# Radiology (descriptive reports): (name, rate, [(particular, sample findings)])
+RADIOLOGY_TESTS = [
+	("X-Ray Chest PA View", 600, [
+		("Findings", "Lung fields are clear. Cardiac size within normal limits. Both costophrenic angles are clear."),
+		("Impression", "Normal chest radiograph."),
+	]),
+	("USG Whole Abdomen", 1500, [
+		("Liver", "Normal in size with mildly increased echotexture. No focal lesion."),
+		("Gall bladder", "Well distended. No calculus seen."),
+		("Kidneys", "Both kidneys normal in size and echotexture. No calculus or hydronephrosis."),
+		("Impression", "Grade I fatty liver. Otherwise normal study."),
+	]),
+	("X-Ray Lumbosacral Spine AP/Lat", 800, [
+		("Findings", "Reduced L4-L5 disc space with marginal osteophytes. Alignment maintained."),
+		("Impression", "Lumbar spondylosis."),
+	]),
+	("CT Scan Brain (Plain)", 4500, [
+		("Findings", "No intracranial haemorrhage or mass effect. Ventricles normal in size."),
+		("Impression", "Normal CT scan of brain."),
+	]),
+	("Echocardiography", 2500, [
+		("Findings", "Normal chamber dimensions. LVEF 60%. No regional wall motion abnormality."),
+		("Impression", "Normal echocardiogram."),
+	]),
+	("X-Ray Knee Joint AP/Lat", 700, [
+		("Findings", "Reduced medial joint space with osteophytes."),
+		("Impression", "Osteoarthritis of knee joint."),
+	]),
+]
+
 # Pharmacy items: (code, name, dosage form, rate, opening qty, reorder level)
 PHARMACY_ITEMS = [
 	("NAPA-500", "Napa 500mg (Paracetamol)", "Tablet", 1.2, 5000, 1000),

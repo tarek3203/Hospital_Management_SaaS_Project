@@ -100,8 +100,8 @@ def get_patient_profile(patient: str):
 			"Visits": header.visits,
 			"IPD": frappe.db.count("Inpatient Record", {"patient": patient}),
 			"Pharmacy": pharmacy_bill_count(patient),
-			"Pathology": frappe.db.count("Lab Test", {"patient": patient}),
-			"Radiology": 0,
+			"Pathology": frappe.db.count("Lab Test", {"patient": patient, "lab_test_group": ["!=", "Radiology"]}),
+			"Radiology": frappe.db.count("Lab Test", {"patient": patient, "lab_test_group": "Radiology"}),
 			"Ambulance": 0,
 		},
 		"symptoms": symptoms,
@@ -382,6 +382,8 @@ def get_consultation_options():
 @frappe.whitelist(methods=["POST"])
 def save_consultation(appointment: str, data: dict | str, submit: int = 0):
 	"""Create or update the visit's Patient Encounter; submit to finalise it."""
+	from hospital_saas.api.lab import create_ordered_tests
+
 	data = frappe.parse_json(data)
 	appt = frappe.get_doc("Patient Appointment", appointment)
 	appt.check_permission("read")
@@ -427,6 +429,7 @@ def save_consultation(appointment: str, data: dict | str, submit: int = 0):
 	enc.save()
 	if cint(submit):
 		enc.submit()
+		create_ordered_tests(enc)
 		if appt.status in ("Open", "Scheduled", "Checked In", "Confirmed"):
 			frappe.db.set_value("Patient Appointment", appt.name, "status", "Checked Out")
 	return enc.name

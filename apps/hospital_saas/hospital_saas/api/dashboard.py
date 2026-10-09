@@ -36,8 +36,8 @@ def get_dashboard():
 		"Receptionist": reception_dashboard,
 		"Nurse": nurse_dashboard,
 		"Pharmacist": pharmacy_dashboard,
-		"Pathologist": lab_dashboard,
-		"Radiologist": lab_dashboard,
+		"Pathologist": lambda: lab_dashboard("Pathology"),
+		"Radiologist": lambda: lab_dashboard("Radiology"),
 	}.get(job)
 	if not builder:
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
@@ -343,23 +343,24 @@ def pharmacy_dashboard():
 	}
 
 
-def lab_dashboard():
+def lab_dashboard(section="Pathology"):
 	month_start = get_first_day(nowdate())
+	group = ["=", "Radiology"] if section == "Radiology" else ["!=", "Radiology"]
 	pending = frappe.get_list(
 		"Lab Test",
-		filters={"docstatus": 0},
+		filters={"docstatus": 0, "lab_test_group": group},
 		fields=["name", "patient_name", "lab_test_name", "date", "status"],
 		order_by="date desc",
 		limit=15,
 	)
 	return {
 		"cards": [
-			card("Tests today", count("Lab Test", {"date": nowdate()}), "droplet"),
-			card("Pending results", count("Lab Test", {"docstatus": 0}), "clock"),
-			card("Completed this month", count("Lab Test", {"docstatus": 1, "date": [">=", month_start]}), "check-circle"),
-			card("Lab income this month", income_by_module(month_start, nowdate())["Pathology"], "dollar-sign", "currency"),
+			card("Tests today", count("Lab Test", {"date": nowdate(), "lab_test_group": group}), "droplet"),
+			card("Pending results", count("Lab Test", {"docstatus": 0, "lab_test_group": group}), "clock"),
+			card("Completed this month", count("Lab Test", {"docstatus": 1, "date": [">=", month_start], "lab_test_group": group}), "check-circle"),
+			card(f"{section} income this month", income_by_module(month_start, nowdate())[section], "dollar-sign", "currency"),
 		],
-		"charts": [tests_by_template(month_start)],
+		"charts": [tests_by_template(month_start, section)],
 		"lists": [
 			{
 				"title": "Pending results",
@@ -370,15 +371,18 @@ def lab_dashboard():
 					{"key": "status", "label": "Status", "badge": True},
 				],
 				"rows": pending,
+				"link": "/radiology" if section == "Radiology" else "/pathology",
 			}
 		],
 	}
 
 
-def tests_by_template(from_date):
+def tests_by_template(from_date, section="Pathology"):
+	condition = "=" if section == "Radiology" else "!="
 	rows = frappe.db.sql(
-		"""select lab_test_name as label, count(*) as value from `tabLab Test`
-		where date >= %s group by lab_test_name order by value desc limit 8""",
+		f"""select lab_test_name as label, count(*) as value from `tabLab Test`
+		where date >= %s and lab_test_group {condition} 'Radiology'
+		group by lab_test_name order by value desc limit 8""",
 		from_date,
 		as_dict=True,
 	)

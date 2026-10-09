@@ -8,7 +8,7 @@ from hospital_saas.api.dashboard import MODULE_SQL
 from hospital_saas.billing import create_invoice
 
 # Billable item groups per billing module (Smart Hospital's "single module billing").
-MODULE_ITEM_GROUPS = {"OPD": ["Healthcare Services"], "Pathology": ["Laboratory"]}
+MODULE_ITEM_GROUPS = {"OPD": ["Healthcare Services"], "Pathology": ["Laboratory"], "Radiology": ["Radiology"]}
 
 
 @frappe.whitelist()

@@ -21,7 +21,7 @@ website_route_rules = [
 ]
 
 after_install = "hospital_saas.install.after_install"
-after_migrate = "hospital_saas.roles.setup_roles"
+after_migrate = ["hospital_saas.roles.setup_roles", "hospital_saas.fixes.apply_fixes"]
 
 doc_events = {
 	"User": {

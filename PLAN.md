@@ -257,7 +257,17 @@ walkthrough update. Estimates assume one developer with AI assistance.
   advance deposits, three discharged stays
 - [ ] Printable discharge summary (Soon), pharmacy/pathology/radiology lines
   on the IPD bill (Soon), gender-appropriate ward allocation in demo data
-- Radiology module (orders, report templates, images)
+- [x] Pathology and Radiology worklists (`/hms/pathology`, `/hms/radiology`):
+  today/pending/report ready/approved counts, status filters, new test,
+  result entry (numeric with units and ranges, or descriptive radiology
+  report), complete, approve (approver role), printable report; doctor
+  orders from consultations and ward rounds land in the worklist;
+  radiology billing tile enabled. Sample collection tracking and image
+  upload/DICOM viewer marked Soon
+- [x] Demo data: six radiology examinations with report text, four weeks of
+  reports, today's pending queue for both labs, most past reports approved
+- [x] Fix: upstream Patient History Settings typed Lab Test "Comments" as a
+  table, which broke submitting any lab test with a comment
 - Operation Theatre (booking, team, notes)
 - [x] Central billing (`/hms/billing`): collection and due cards, Smart
   Hospital's single module billing tiles (Radiology, Pharmacy, Blood Issue

@@ -25,6 +25,10 @@ const routes = [
 		props: true,
 		meta: { bare: true },
 	},
+	{ path: "/pathology", name: "Pathology", component: () => import("./pages/LabWorklist.vue"), props: { section: "Pathology" } },
+	{ path: "/radiology", name: "Radiology", component: () => import("./pages/LabWorklist.vue"), props: { section: "Radiology" } },
+	{ path: "/lab/:name", name: "LabTest", component: () => import("./pages/LabTest.vue"), props: true },
+	{ path: "/lab/:name/report", name: "LabReport", component: () => import("./pages/LabReport.vue"), props: true, meta: { bare: true } },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]
