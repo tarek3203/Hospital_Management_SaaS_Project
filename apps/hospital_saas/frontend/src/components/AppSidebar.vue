@@ -23,7 +23,7 @@
 					<span class="flex-1 truncate">{{ item.label }}</span>
 					<span
 						v-if="!item.children && !item.route && !item.desk"
-						class="rounded bg-white/10 px-1.5 text-[10px] uppercase tracking-wide text-gray-400"
+						class="rounded bg-amber-400/15 px-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300"
 						>soon</span
 					>
 					<FeatherIcon
@@ -43,7 +43,7 @@
 						<span class="flex-1 truncate">{{ child.label }}</span>
 						<span
 							v-if="!child.route && !child.desk"
-							class="rounded bg-white/10 px-1.5 text-[10px] uppercase tracking-wide text-gray-500"
+							class="rounded bg-amber-400/15 px-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300"
 							>soon</span
 						>
 					</button>

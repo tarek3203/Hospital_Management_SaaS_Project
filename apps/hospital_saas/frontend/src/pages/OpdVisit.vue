@@ -16,6 +16,10 @@
 				<PatientHeader :patient="data.patient" :extra="[data.visit.name, `Dr. ${data.visit.practitioner_name}`]">
 					<template #actions>
 						<div class="flex flex-wrap gap-2">
+							<Button v-if="c" @click="$router.push(`/opd/visit/${encodeURIComponent(appointment)}/print`)">
+								<template #prefix><FeatherIcon name="printer" class="h-4 w-4" /></template>
+								Prescription
+							</Button>
 							<Button v-if="data.can.vitals" @click="showVitals = true">
 								<template #prefix><FeatherIcon name="heart" class="h-4 w-4" /></template>
 								Record vitals
@@ -101,6 +105,8 @@
 				<DataTable :columns="payColumns" :rows="data.payments" empty-text="No payments yet" />
 			</div>
 
+			<SoonPanel v-else-if="tab === 'operations'" title="Operations" description="Book operation theatre slots for this visit, record the surgical team, anaesthesia and operation notes." />
+			<SoonPanel v-else-if="tab === 'live'" title="Live consultation" description="Video consultation with the doctor from this visit, with the meeting link sent to the patient by SMS." />
 			<Timeline v-else-if="tab === 'timeline'" :patient="data.patient.name" :entries="timeline.data" :can-add="canNote" @added="timeline.reload()" />
 			<VitalsTable v-else-if="tab === 'vitals'" :rows="data.vitals" />
 
@@ -119,6 +125,7 @@ import DataTable from "@/components/DataTable.vue"
 import InfoGrid from "@/components/InfoGrid.vue"
 import PatientHeader from "@/components/PatientHeader.vue"
 import PaymentDialog from "@/components/PaymentDialog.vue"
+import SoonPanel from "@/components/SoonPanel.vue"
 import TabBar from "@/components/TabBar.vue"
 import Timeline from "@/components/Timeline.vue"
 import VitalsDialog from "@/components/VitalsDialog.vue"
@@ -169,8 +176,10 @@ const tabs = computed(() => [
 	{ key: "overview", label: "Overview", icon: "grid" },
 	{ key: "medication", label: "Medication", icon: "package", count: c.value?.medicines.length || 0 },
 	{ key: "labs", label: "Lab Investigation", icon: "droplet" },
+	{ key: "operations", label: "Operations", icon: "scissors", soon: true },
 	{ key: "charges", label: "Charges", icon: "file-text" },
 	{ key: "payments", label: "Payments", icon: "credit-card" },
+	{ key: "live", label: "Live Consultation", icon: "video", soon: true },
 	{ key: "timeline", label: "Timeline", icon: "clock" },
 	{ key: "vitals", label: "Vitals", icon: "heart", count: data.value.vitals.length },
 ])

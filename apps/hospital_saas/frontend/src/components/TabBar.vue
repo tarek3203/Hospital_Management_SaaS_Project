@@ -14,12 +14,14 @@
 			<FeatherIcon v-if="tab.icon" :name="tab.icon" class="h-4 w-4" />
 			{{ tab.label }}
 			<span v-if="tab.count != null" class="rounded-full bg-gray-100 px-1.5 text-xs text-gray-600">{{ tab.count }}</span>
+			<SoonBadge v-if="tab.soon" />
 		</button>
 	</div>
 </template>
 
 <script setup>
 import { FeatherIcon } from "frappe-ui"
+import SoonBadge from "@/components/SoonBadge.vue"
 
 defineProps({ tabs: { type: Array, required: true }, modelValue: String })
 defineEmits(["update:modelValue"])

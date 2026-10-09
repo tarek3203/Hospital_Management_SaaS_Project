@@ -1,6 +1,7 @@
 <template>
 	<FrappeUIProvider>
-		<div v-if="session.data" class="flex h-screen overflow-hidden">
+		<router-view v-if="session.data && $route.meta.bare" />
+		<div v-else-if="session.data" class="flex h-screen overflow-hidden">
 			<AppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 			<div class="flex min-w-0 flex-1 flex-col">
 				<AppTopbar @toggle-sidebar="sidebarOpen = !sidebarOpen" />

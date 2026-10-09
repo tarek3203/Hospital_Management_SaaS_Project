@@ -65,6 +65,17 @@
 					</div>
 				</div>
 
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<div class="rounded-md border border-dashed px-3 py-2.5">
+						<p class="flex items-center gap-2 text-xs text-gray-600">ICD-10 codes <SoonBadge /></p>
+						<p class="mt-0.5 text-xs text-gray-500">Search the ICD-10 catalogue and attach codes to each diagnosis.</p>
+					</div>
+					<div class="rounded-md border border-dashed px-3 py-2.5">
+						<p class="flex items-center gap-2 text-xs text-gray-600">Clinical findings <SoonBadge /></p>
+						<p class="mt-0.5 text-xs text-gray-500">Pick standard findings by category, like Smart Hospital's findings setup.</p>
+					</div>
+				</div>
+
 				<FormControl v-model="form.notes" type="textarea" label="Advice and notes" :rows="3" />
 				<ErrorMessage :message="save.error" />
 			</div>
@@ -82,6 +93,7 @@
 <script setup>
 import { reactive, ref, watch } from "vue"
 import { Button, createResource, Dialog, ErrorMessage, FeatherIcon, FormControl, LoadingIndicator, toast } from "frappe-ui"
+import SoonBadge from "@/components/SoonBadge.vue"
 import TagInput from "@/components/TagInput.vue"
 
 const show = defineModel({ type: Boolean })

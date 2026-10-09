@@ -34,7 +34,7 @@
 							</div>
 							<div>
 								<p class="text-lg font-semibold leading-tight text-gray-900">{{ count }}</p>
-								<p class="text-xs text-gray-500">{{ label }}</p>
+								<p class="flex items-center gap-1 text-xs text-gray-500">{{ label }} <SoonBadge v-if="SOON_HISTORY.includes(label)" /></p>
 							</div>
 						</div>
 					</div>
@@ -102,6 +102,7 @@ import { Avatar, Badge, Button, createResource, ErrorMessage, FeatherIcon, Loadi
 import DataTable from "@/components/DataTable.vue"
 import InfoGrid from "@/components/InfoGrid.vue"
 import PatientHeader from "@/components/PatientHeader.vue"
+import SoonBadge from "@/components/SoonBadge.vue"
 import TabBar from "@/components/TabBar.vue"
 import Timeline from "@/components/Timeline.vue"
 import VisitsTable from "@/components/VisitsTable.vue"
@@ -114,6 +115,8 @@ const tab = ref("overview")
 const canBook = computed(() => ["Super Admin", "Admin", "Receptionist"].includes(session.data.job))
 const canNote = computed(() => ["Super Admin", "Admin", "Doctor", "Nurse", "Receptionist"].includes(session.data.job))
 
+// Modules not built yet: their counts stay 0 until they land.
+const SOON_HISTORY = ["Radiology", "Ambulance"]
 const HISTORY = {
 	Visits: { icon: "activity", bg: "bg-blue-50 text-blue-600" },
 	IPD: { icon: "layers", bg: "bg-emerald-50 text-emerald-600" },

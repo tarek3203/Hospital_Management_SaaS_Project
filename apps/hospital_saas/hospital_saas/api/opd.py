@@ -309,6 +309,7 @@ def get_visit(appointment: str):
 			"status": appt.status,
 			"practitioner": appt.practitioner,
 			"practitioner_name": appt.practitioner_name,
+			"practitioner_designation": frappe.db.get_value("Healthcare Practitioner", appt.practitioner, "designation"),
 			"department": appt.department,
 			"appointment_type": appt.appointment_type,
 			"notes": appt.notes,

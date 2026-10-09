@@ -9,6 +9,16 @@ TIMEZONE = "Asia/Dhaka"
 # Shared password for the public demo logins (shown on the login page).
 DEMO_PASSWORD = "Demo@2026"
 
+# Fictional contact details printed on prescriptions and receipts.
+HOSPITAL_CONTACT = {
+	"phone_no": "+880 9612-000111",
+	"email": "info@citycare.test",
+	"website": "citycare.test",
+	"address_line1": "House 25, Road 7, Dhanmondi",
+	"city": "Dhaka",
+	"pincode": "1205",
+}
+
 BRANCHES = ["Dhanmondi (Main)", "Uttara"]
 
 EXTRA_DEPARTMENTS = ["General Medicine", "Paediatrics"]

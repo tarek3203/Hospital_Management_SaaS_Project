@@ -49,11 +49,31 @@ def get_session():
 		"job": job,
 		"practitioner": practitioner,
 		"menu": menu_for(job),
-		"hospital": {
-			"name": frappe.db.get_single_value("System Settings", "app_name") or APP_NAME,
-			"company": frappe.defaults.get_global_default("company"),
-			"logo": LOGO,
-			"currency": frappe.defaults.get_global_default("currency"),
-		},
+		"hospital": get_hospital_info(),
 		"demo_mode": bool(frappe.conf.get("hms_demo_mode")),
+	}
+
+
+def get_hospital_info():
+	company = frappe.defaults.get_global_default("company")
+	contact = frappe.db.get_value("Company", company, ["phone_no", "email", "website"], as_dict=True) or {}
+	address = frappe.db.sql(
+		"""select a.address_line1, a.address_line2, a.city, a.pincode from `tabAddress` a
+		join `tabDynamic Link` dl on dl.parent = a.name and dl.parenttype = 'Address'
+		where dl.link_doctype = 'Company' and dl.link_name = %s and a.disabled = 0 limit 1""",
+		company,
+		as_dict=True,
+	)
+	address = address[0] if address else {}
+	return {
+		"name": frappe.db.get_single_value("System Settings", "app_name") or APP_NAME,
+		"company": company,
+		"logo": LOGO,
+		"currency": frappe.defaults.get_global_default("currency"),
+		"phone": contact.get("phone_no"),
+		"email": contact.get("email"),
+		"website": contact.get("website"),
+		"address": ", ".join(
+			filter(None, [address.get("address_line1"), address.get("address_line2"), address.get("city"), address.get("pincode")])
+		),
 	}

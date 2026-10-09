@@ -20,6 +20,8 @@ declare module 'vue' {
     PaymentDialog: typeof import('./src/components/PaymentDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SoonBadge: typeof import('./src/components/SoonBadge.vue')['default']
+    SoonPanel: typeof import('./src/components/SoonPanel.vue')['default']
     StatCard: typeof import('./src/components/StatCard.vue')['default']
     TabBar: typeof import('./src/components/TabBar.vue')['default']
     TagInput: typeof import('./src/components/TagInput.vue')['default']

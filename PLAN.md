@@ -238,7 +238,11 @@ walkthrough update. Estimates assume one developer with AI assistance.
 - [x] Record vitals (nurse, receptionist, doctor); patient numbers
   HLC-PAT-YYYY-#####; structured symptoms/diagnoses/allergies in demo data;
   today's queue billed
-- [ ] Prescription print, ICD-10 codes and findings masters, radiology orders
+- [x] Printable A4 prescription with hospital letterhead (`/hms/opd/visit/<id>/print`)
+- [x] "Soon" labels: unbuilt features stay visible to prospects with a Soon
+  badge (sidebar, tabs, placeholders), e.g. ICD-10 codes, clinical findings,
+  visit Operations and Live Consultation tabs
+- [ ] ICD-10 codes and findings masters (shown as Soon), radiology orders
 - IPD patient page (nurse notes, medication chart, bed transfer, IPD charges,
   discharge summary), visual bed board
 - Radiology module (orders, report templates, images)

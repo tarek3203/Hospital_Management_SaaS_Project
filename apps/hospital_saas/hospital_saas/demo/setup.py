@@ -39,6 +39,7 @@ def run():
 		setup_inpatients,
 		setup_staff,
 		setup_users,
+		setup_hospital_profile,
 		setup_patient_ids,
 		enrich_clinical_data,
 		bill_todays_queue,
@@ -891,3 +892,22 @@ def bill_todays_queue():
 		invoice = make_invoice(appt.patient, getdate(), [{"item_code": "OPD-CONSULT", "qty": 1, "rate": fee}], paid=rng.random() > 0.15)
 		paid = fee - flt(frappe.db.get_value("Sales Invoice", invoice, "outstanding_amount"))
 		frappe.db.set_value("Patient Appointment", appt.name, {"invoiced": 1, "ref_sales_invoice": invoice, "paid_amount": paid})
+
+
+def setup_hospital_profile():
+	c = D.HOSPITAL_CONTACT
+	frappe.db.set_value("Company", D.COMPANY, {k: c[k] for k in ("phone_no", "email", "website")})
+	if not frappe.db.exists("Dynamic Link", {"link_doctype": "Company", "link_name": D.COMPANY, "parenttype": "Address"}):
+		frappe.get_doc(
+			{
+				"doctype": "Address",
+				"address_title": D.COMPANY,
+				"address_type": "Billing",
+				"address_line1": c["address_line1"],
+				"city": c["city"],
+				"pincode": c["pincode"],
+				"country": D.COUNTRY,
+				"is_your_company_address": 1,
+				"links": [{"link_doctype": "Company", "link_name": D.COMPANY}],
+			}
+		).insert(ignore_permissions=True)
