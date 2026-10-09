@@ -304,8 +304,10 @@ walkthrough update. Estimates assume one developer with AI assistance.
   expiry are expired by the nightly job; ambulance calls count on the
   patient page; birth and death certificates (print)
 - [x] Demo data for every register
-- [ ] Certificates menu, patient and staff ID cards (QR/barcode); blood bank
-  and ambulance charges on bills
+- [x] Patient and staff ID cards (`/hms/cards/patient|staff`): CR80 cards
+  with QR code and barcode, A4 print sheet
+- [ ] Custom certificate templates (Soon); blood bank and ambulance charges
+  on bills
 
 ### Phase 5: HR extras and finance (1 week)
 - QR attendance, duty roster, annual calendar, simplified income/expense,

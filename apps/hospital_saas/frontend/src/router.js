@@ -38,6 +38,7 @@ const routes = [
 		props: true,
 		meta: { bare: true },
 	},
+	{ path: "/cards/:kind", name: "IdCards", component: () => import("./pages/IdCards.vue"), props: true, meta: { bare: true } },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

@@ -129,11 +129,10 @@ MENU = [
 		"label": "Certificate",
 		"icon": "award",
 		"jobs": [SA, AD, DOC],
-		"phase": 4,
 		"children": [
 			{"key": "certificates", "label": "Certificate", "phase": 4},
-			{"key": "patient-id-card", "label": "Patient ID Card", "phase": 4},
-			{"key": "staff-id-card", "label": "Staff ID Card", "jobs": [SA, AD], "phase": 4},
+			{"key": "patient-id-card", "label": "Patient ID Card", "route": "/cards/patient"},
+			{"key": "staff-id-card", "label": "Staff ID Card", "jobs": [SA, AD], "route": "/cards/staff"},
 		],
 	},
 	{"key": "front-cms", "label": "Front CMS", "icon": "globe", "jobs": [SA, AD], "phase": 7},
