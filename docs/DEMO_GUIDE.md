@@ -38,6 +38,12 @@ and is never shown on the demo.
 3. Enable the reset timer: in `infrastructure/.env` set `COMPOSE_PROFILES=demo`
    (and optionally `RESET_INTERVAL_HOURS`), then `up -d` again.
 
+Check every role after a change or a reset:
+
+```bash
+python3 infrastructure/demo/smoke_test.py
+```
+
 Reset by hand at any time:
 
 ```bash

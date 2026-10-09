@@ -23,6 +23,9 @@ CUSTOM_ROLES = [
 	"Receptionist",
 ]
 
+# Roles whose users start on /hms instead of /desk.
+HMS_HOME_ROLES = CUSTOM_ROLES + ["Physician", "Nursing User"]
+
 # Profile name -> roles. Profile names match the job titles staff see.
 ROLE_PROFILES = {
 	"Super Admin": [
@@ -84,6 +87,11 @@ def setup_roles():
 	for role in CUSTOM_ROLES:
 		if not frappe.db.exists("Role", role):
 			frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert(ignore_permissions=True)
+
+	# Staff land on the /hms app after login.
+	for role in HMS_HOME_ROLES:
+		if frappe.db.exists("Role", role):
+			frappe.db.set_value("Role", role, "home_page", "/hms")
 
 	# Patients use Healthcare's portal, never the Desk.
 	frappe.db.set_value("Role", "Patient", {"desk_access": 0, "home_page": "/patient-portal"})

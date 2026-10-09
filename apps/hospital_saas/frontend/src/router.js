@@ -1,0 +1,11 @@
+import { createRouter, createWebHistory } from "vue-router"
+
+const routes = [
+	{ path: "/", name: "Dashboard", component: () => import("./pages/Dashboard.vue") },
+	{ path: "/patients", name: "Patients", component: () => import("./pages/Patients.vue") },
+	{ path: "/appointments", name: "Appointments", component: () => import("./pages/Appointments.vue") },
+	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
+	{ path: "/:pathMatch(.*)*", redirect: "/" },
+]
+
+export default createRouter({ history: createWebHistory("/hms"), routes })

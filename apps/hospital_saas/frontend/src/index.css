@@ -1,0 +1,10 @@
+@import "frappe-ui/style.css";
+
+body {
+	@apply bg-gray-50 text-gray-900;
+}
+
+/* frappe-ui selects size to their content; form fields should fill the column. */
+[role="dialog"] button[role="combobox"] {
+	width: 100%;
+}

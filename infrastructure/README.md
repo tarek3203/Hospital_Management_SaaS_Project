@@ -51,3 +51,18 @@ Open http://localhost:8080 — logins are in `docs/DEMO_GUIDE.md`.
 - Public demo (role login buttons, scheduled reset): see `docs/DEMO_GUIDE.md`
 - After DocType/hook changes: `docker exec hms-backend-1 bench --site hms.localhost migrate`
 - Rebuild `hms/app:v16` when dependencies change or before shipping an image.
+
+## Frontend (`/hms`)
+
+The staff app is a Vue 3 + frappe-ui SPA in `apps/hospital_saas/frontend`.
+It builds into `hospital_saas/public/frontend` and writes `hospital_saas/www/hms.html`
+(both committed, so the Docker image needs no Node build).
+
+```bash
+cd apps/hospital_saas/frontend
+npm install
+npm run watch    # rebuilds on save; refresh /hms in the browser
+npm run build    # one-off build before committing
+```
+
+After a build, clear the page cache: `docker exec hms-backend-1 bench --site hms.localhost clear-website-cache`.

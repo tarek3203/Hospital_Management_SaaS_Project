@@ -212,11 +212,18 @@ walkthrough update. Estimates assume one developer with AI assistance.
 - [x] 10 Role Profiles, custom roles, extra read permissions
 - [x] Demo users for every role, patient portal login
 - [x] Demo mode: login page role picker, locked demo accounts, scheduled reset
-- [x] Login smoke test for all roles (scripted)
-- [ ] `/hms` frontend scaffold: Vue 3 + frappe-ui + Vite build in `hospital_saas`,
-      login redirect per role, app shell (sidebar per role, topbar, search)
-- [ ] Role dashboards on `/hms` (number cards and charts per role)
-- [ ] First full screen: Receptionist patient registration + appointment booking
+- [x] Login smoke test for all roles (`infrastructure/demo/smoke_test.py`)
+- [x] `/hms` frontend: Vue 3 + frappe-ui + Vite in `apps/hospital_saas/frontend`,
+      staff land on `/hms` after login, app shell with per-role sidebar matching
+      the Smart Hospital menu counts, topbar search and quick "New" menu
+- [x] Role dashboards on `/hms` (cards, charts and lists for all 9 staff jobs)
+- [x] Patients (list, search, register) and Appointments (day view, status
+      tabs, booking with doctor slots, fee and payment, check in / out / no
+      show / cancel)
+- [x] Menu items not yet on `/hms` open the matching Desk page, or a "being
+      built" page naming the phase
+- [ ] Rolling demo dates (moved up from Phase 8: "today" goes stale a day
+      after seeding, which hurts the demo)
 
 ### Phase 2: Clinical core (3 weeks)
 - OPD patient page (visits, prescription, vitals, symptoms, ICD-10, findings,

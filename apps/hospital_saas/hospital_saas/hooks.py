@@ -16,6 +16,10 @@ website_context = {
 
 web_include_js = "/assets/hospital_saas/js/demo_login.js"
 
+website_route_rules = [
+	{"from_route": "/hms/<path:app_path>", "to_route": "hms"},
+]
+
 after_install = "hospital_saas.install.after_install"
 after_migrate = "hospital_saas.roles.setup_roles"
 
