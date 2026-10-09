@@ -11,9 +11,11 @@ from datetime import datetime, time, timedelta
 
 import frappe
 from frappe.utils import add_days, add_months, flt, getdate, now_datetime, nowdate
+from frappe.utils.password import update_password
 
 from hospital_saas.demo import data as D
 from hospital_saas.install import apply_branding
+from hospital_saas.roles import setup_roles
 
 rng = random.Random(2026)
 
@@ -702,12 +704,12 @@ def setup_inpatients():
 
 
 def setup_staff():
-	if frappe.db.count("Employee", {"company": D.COMPANY}) >= len(D.STAFF):
-		return
 	people = [(s[0], s[1], s[2], s[3], s[4], s[5]) for s in D.STAFF] + [
 		(d[0], d[1], d[2], d[7], "Medical", d[4]) for d in D.DOCTORS
 	]
 	for first, last, gender, designation, dept, branch in people:
+		if frappe.db.exists("Employee", {"first_name": first, "last_name": last, "company": D.COMPANY}):
+			continue
 		employee = frappe.get_doc(
 			{
 				"doctype": "Employee",
@@ -730,6 +732,8 @@ def setup_staff():
 			frappe.db.set_value("Healthcare Practitioner", doctor, "employee", employee.name)
 
 	# Two weeks of attendance so the HR dashboards have something to show.
+	if frappe.db.exists("Attendance", {"company": D.COMPANY}):
+		return
 	employees = frappe.get_all("Employee", filters={"company": D.COMPANY}, pluck="name")
 	for days_ago in range(14, 0, -1):
 		day = getdate(add_days(nowdate(), -days_ago))
@@ -746,34 +750,62 @@ def setup_staff():
 			att.submit()
 
 
-def sync_user_roles():
-	"""Bring existing demo users' roles in line with data.DEMO_USERS."""
-	for email, _first, _last, roles, _doctor_idx in D.DEMO_USERS:
-		if frappe.db.exists("User", email):
-			user = frappe.get_doc("User", email)
-			user.add_roles(*[r for r in roles if frappe.db.exists("Role", r)])
-	frappe.db.commit()
-
-
 def setup_users():
-	for email, first, last, roles, doctor_idx in D.DEMO_USERS:
-		if frappe.db.exists("User", email):
+	"""Create or refresh one demo login per role profile."""
+	setup_roles()
+	for email, first, last, profile, doctor_idx in D.DEMO_USERS:
+		if profile == "Patient":
+			setup_patient_user(email)
 			continue
-		user = frappe.get_doc(
+		user = frappe.get_doc("User", email) if frappe.db.exists("User", email) else frappe.new_doc("User")
+		user.update(
 			{
-				"doctype": "User",
 				"email": email,
 				"first_name": first,
 				"last_name": last,
+				"enabled": 1,
 				"send_welcome_email": 0,
 				"new_password": D.DEMO_PASSWORD,
-				"roles": [{"role": r} for r in roles if frappe.db.exists("Role", r)],
 			}
 		)
-		user.insert(ignore_permissions=True)
+		user.set("roles", [])
+		user.set("role_profiles", [{"role_profile": profile}])
+		user.save(ignore_permissions=True)
+		employee = frappe.db.get_value("Employee", {"first_name": first, "last_name": last, "company": D.COMPANY})
+		if employee:
+			frappe.db.set_value("Employee", employee, "user_id", email)
 		if doctor_idx is not None:
 			first_name, last_name = D.DOCTORS[doctor_idx][:2]
 			doctor = frappe.db.get_value(
 				"Healthcare Practitioner", {"first_name": first_name, "last_name": last_name}
 			)
 			frappe.db.set_value("Healthcare Practitioner", doctor, "user_id", email)
+
+	for email in D.LEGACY_DEMO_USERS:
+		if frappe.db.exists("User", email):
+			frappe.db.set_value("User", email, "enabled", 0)
+
+
+def setup_patient_user(email):
+	"""Portal login for a patient who already has visits, labs and bills."""
+	patient = frappe.db.get_value("Patient", {"email": email}) or frappe.db.get_value(
+		"Patient Encounter", {"docstatus": 1}, "patient", order_by="encounter_date desc"
+	)
+	first, last = frappe.db.get_value("Patient", patient, ["first_name", "last_name"])
+	frappe.db.set_value("Patient", patient, "email", email)
+	if not frappe.db.exists("User", email):
+		frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": email,
+				"first_name": first,
+				"last_name": last,
+				"user_type": "Website User",
+				"send_welcome_email": 0,
+				"roles": [{"role": "Patient"}],
+			}
+		).insert(ignore_permissions=True)
+	user = frappe.get_doc("User", email)
+	user.save(ignore_permissions=True)  # recompute user_type from roles
+	update_password(email, D.DEMO_PASSWORD)
+	frappe.db.set_value("Patient", patient, "user_id", email)

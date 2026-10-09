@@ -6,7 +6,7 @@ COUNTRY = "Bangladesh"
 CURRENCY = "BDT"
 TIMEZONE = "Asia/Dhaka"
 
-# Demo logins. Local demo only: change before exposing a site publicly.
+# Shared password for the public demo logins (shown on the login page).
 DEMO_PASSWORD = "Demo@2026"
 
 BRANCHES = ["Dhanmondi (Main)", "Uttara"]
@@ -140,18 +140,29 @@ STAFF = [
 	("Hasib", "Uddin", "Male", "Lab Technologist", "Laboratory", "Dhanmondi (Main)"),
 	("Liton", "Das", "Male", "Lab Technologist", "Laboratory", "Uttara"),
 	("Anwar", "Hossain", "Male", "Pharmacist", "Pharmacy", "Dhanmondi (Main)"),
+	("Tanjila", "Ahmed", "Female", "Radiologist", "Radiology", "Dhanmondi (Main)"),
 	("Selina", "Parvin", "Female", "Accounts Officer", "Accounts", "Dhanmondi (Main)"),
 	("Masud", "Rana", "Male", "Branch Manager", "Administration", "Uttara"),
+	("Shafiqul", "Islam", "Male", "Managing Director", "Administration", "Dhanmondi (Main)"),
 ]
 
-# Demo login users: (email, first name, last name, roles, linked doctor index or None)
+# Demo logins, one per role profile (see hospital_saas/roles.py), shown on the
+# login page when the site runs in demo mode.
+# (email, first name, last name, role profile, linked doctor index or None)
 DEMO_USERS = [
-	("admin.demo@citycare.test", "Hospital", "Admin", ["System Manager", "Healthcare Administrator", "Physician", "Nursing User", "Laboratory User", "LabTest Approver", "Accounts User", "Accounts Manager", "HR Manager", "Stock Manager"], None),
-	("reception@citycare.test", "Rasel", "Mia", ["Healthcare Administrator", "Nursing User", "Accounts User"], None),
-	("doctor@citycare.test", "Mahbubul", "Alam", ["Physician"], 1),
-	("nurse@citycare.test", "Rupa", "Akter", ["Nursing User"], None),
-	("lab@citycare.test", "Hasib", "Uddin", ["LabTest Approver", "Laboratory User"], None),
-	("accounts@citycare.test", "Selina", "Parvin", ["Accounts User", "Accounts Manager"], None),
+	("superadmin@citycare.test", "Shafiqul", "Islam", "Super Admin", None),
+	("admin@citycare.test", "Masud", "Rana", "Admin", None),
+	("doctor@citycare.test", "Mahbubul", "Alam", "Doctor", 1),
+	("pharmacist@citycare.test", "Anwar", "Hossain", "Pharmacist", None),
+	("pathologist@citycare.test", "Hasib", "Uddin", "Pathologist", None),
+	("radiologist@citycare.test", "Tanjila", "Ahmed", "Radiologist", None),
+	("accountant@citycare.test", "Selina", "Parvin", "Accountant", None),
+	("reception@citycare.test", "Rasel", "Mia", "Receptionist", None),
+	("nurse@citycare.test", "Rupa", "Akter", "Nurse", None),
+	("patient@citycare.test", "", "", "Patient", None),  # name taken from the patient record,
 ]
+
+# Stage 0 logins replaced by the list above; disabled on existing sites.
+LEGACY_DEMO_USERS = ["admin.demo@citycare.test", "lab@citycare.test", "accounts@citycare.test"]
 
 MODES_OF_PAYMENT = ["Cash", "bKash", "Nagad", "Card"]

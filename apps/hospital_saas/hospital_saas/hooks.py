@@ -14,4 +14,18 @@ website_context = {
 	"splash_image": "/assets/hospital_saas/images/logo.svg",
 }
 
+web_include_js = "/assets/hospital_saas/js/demo_login.js"
+
 after_install = "hospital_saas.install.after_install"
+after_migrate = "hospital_saas.roles.setup_roles"
+
+doc_events = {
+	"User": {
+		"before_validate": "hospital_saas.demo_mode.protect_demo_user",
+		"on_trash": "hospital_saas.demo_mode.block_demo_user_delete",
+	},
+}
+
+override_whitelisted_methods = {
+	"frappe.core.doctype.user.user.update_password": "hospital_saas.demo_mode.update_password",
+}

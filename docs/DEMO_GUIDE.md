@@ -2,18 +2,51 @@
 
 URL (local): http://localhost:8080
 
-All demo accounts use the password `Demo@2026` (local demo only).
+All demo accounts use the password `Demo@2026`. With demo mode on (see below)
+the login page shows a button per role, so visitors never need to type them.
 
-| Login | Role in the story |
-| --- | --- |
-| `admin.demo@citycare.test` | Hospital admin / owner — sees everything |
-| `reception@citycare.test` | Front desk — registration, appointments, billing |
-| `doctor@citycare.test` | Prof. Dr. Mahbubul Alam (Cardiology) — encounters, prescriptions |
-| `nurse@citycare.test` | Nursing — vitals, inpatient care |
-| `lab@citycare.test` | Lab technologist — results and approval |
-| `accounts@citycare.test` | Accounts — invoices, payments, receivables |
+| Login | Role | Person in the story |
+| --- | --- | --- |
+| `superadmin@citycare.test` | Super Admin | Shafiqul Islam, Managing Director (everything, incl. system settings) |
+| `admin@citycare.test` | Admin | Masud Rana, hospital admin |
+| `doctor@citycare.test` | Doctor | Prof. Dr. Mahbubul Alam (Cardiology) |
+| `pharmacist@citycare.test` | Pharmacist | Anwar Hossain |
+| `pathologist@citycare.test` | Pathologist | Hasib Uddin |
+| `radiologist@citycare.test` | Radiologist | Tanjila Ahmed |
+| `accountant@citycare.test` | Accountant | Selina Parvin |
+| `reception@citycare.test` | Receptionist | Rasel Mia |
+| `nurse@citycare.test` | Nurse | Rupa Akter |
+| `patient@citycare.test` | Patient | A patient with visits, labs and bills (patient portal) |
 
-`Administrator` / `admin` is the system super user; don't use it in front of clients.
+`Administrator` is the system super user; its password is in `infrastructure/.env`
+and is never shown on the demo.
+
+## Public demo mode
+
+1. Load demo data (see `infrastructure/README.md`), then turn demo mode on:
+
+   ```bash
+   docker exec hms-backend-1 bench --site hms.localhost set-config hms_demo_mode 1
+   ```
+
+2. Save the clean state that resets go back to:
+
+   ```bash
+   docker exec hms-backend-1 bash /home/frappe/demo/snapshot.sh
+   ```
+
+3. Enable the reset timer: in `infrastructure/.env` set `COMPOSE_PROFILES=demo`
+   (and optionally `RESET_INTERVAL_HOURS`), then `up -d` again.
+
+Reset by hand at any time:
+
+```bash
+docker exec -e DB_ROOT_PASSWORD=<db root password> hms-backend-1 bash /home/frappe/demo/reset.sh
+```
+
+While demo mode is on, demo accounts cannot change their password, email,
+roles or enabled flag and cannot be deleted. Customer installs never set
+`hms_demo_mode`, so none of this applies there.
 
 ## What's in the data
 

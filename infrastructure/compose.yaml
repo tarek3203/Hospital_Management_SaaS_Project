@@ -9,6 +9,7 @@ x-app: &app
     - logs:/home/frappe/frappe-bench/logs
     # Live-mount our app so Python changes only need a container restart.
     - ../apps/hospital_saas:/home/frappe/frappe-bench/apps/hospital_saas
+    - ./demo:/home/frappe/demo:ro
 
 x-redis-env: &redis-env
   FRAPPE_REDIS_CACHE: redis://redis-cache:6379
@@ -108,6 +109,26 @@ services:
     depends_on:
       configurator:
         condition: service_completed_successfully
+
+  # Public demo only: restores the demo snapshot on a timer. Off unless the
+  # "demo" profile is enabled (COMPOSE_PROFILES=demo), so customer installs
+  # never run it.
+  demo-reset:
+    <<: *app
+    profiles: [demo]
+    restart: unless-stopped
+    entrypoint: [bash, -c]
+    environment:
+      SITE_NAME: ${SITE_NAME:-hms.localhost}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+      RESET_INTERVAL_HOURS: ${RESET_INTERVAL_HOURS:-6}
+    command:
+      - >
+        while true; do
+          sleep $$((RESET_INTERVAL_HOURS * 3600));
+          bash /home/frappe/demo/reset.sh || echo "demo reset failed";
+        done
+    depends_on: [backend]
 
   db:
     image: mariadb:11.8

@@ -45,6 +45,9 @@ Open http://localhost:8080 — logins are in `docs/DEMO_GUIDE.md`.
 ## Day to day
 
 - `apps/hospital_saas` is bind-mounted; after Python changes restart the app
-  containers: `docker compose -f infrastructure/compose.yaml restart backend queue-short queue-long scheduler`
+  containers: `docker compose -f infrastructure/compose.yaml --env-file infrastructure/.env restart backend queue-short queue-long scheduler frontend`
+  (restart `frontend` too, nginx keeps the old backend address otherwise and returns 502)
+- After changing `hooks.py`: `docker exec hms-backend-1 bench --site hms.localhost clear-cache`
+- Public demo (role login buttons, scheduled reset): see `docs/DEMO_GUIDE.md`
 - After DocType/hook changes: `docker exec hms-backend-1 bench --site hms.localhost migrate`
 - Rebuild `hms/app:v16` when dependencies change or before shipping an image.
