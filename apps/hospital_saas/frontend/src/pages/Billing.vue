@@ -138,7 +138,7 @@ const modules = [
 	{ key: "Pathology", label: "Pathology", icon: "droplet", bill: true },
 	{ key: "Radiology", label: "Radiology", icon: "aperture", bill: true },
 	{ key: "Pharmacy", label: "Pharmacy", icon: "package", route: "/pharmacy" },
-	{ key: "Blood Issue", label: "Blood Issue", icon: "heart", soon: true },
+	{ key: "Blood Issue", label: "Blood Issue", icon: "heart", route: "/r/blood-issues" },
 	{ key: "Blood Component", label: "Blood Component Issue", icon: "droplet", soon: true },
 ]
 

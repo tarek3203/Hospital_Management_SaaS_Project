@@ -102,7 +102,7 @@ def get_patient_profile(patient: str):
 			"Pharmacy": pharmacy_bill_count(patient),
 			"Pathology": frappe.db.count("Lab Test", {"patient": patient, "lab_test_group": ["!=", "Radiology"]}),
 			"Radiology": frappe.db.count("Lab Test", {"patient": patient, "lab_test_group": "Radiology"}),
-			"Ambulance": 0,
+			"Ambulance": frappe.db.count("Ambulance Call", {"patient": patient}),
 		},
 		"symptoms": symptoms,
 		"diagnoses": diagnoses,

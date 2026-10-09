@@ -116,7 +116,7 @@ const canBook = computed(() => ["Super Admin", "Admin", "Receptionist"].includes
 const canNote = computed(() => ["Super Admin", "Admin", "Doctor", "Nurse", "Receptionist"].includes(session.data.job))
 
 // Modules not built yet: their counts stay 0 until they land.
-const SOON_HISTORY = ["Ambulance"]
+const SOON_HISTORY = []
 const HISTORY = {
 	Visits: { icon: "activity", bg: "bg-blue-50 text-blue-600" },
 	IPD: { icon: "layers", bg: "bg-emerald-50 text-emerald-600" },

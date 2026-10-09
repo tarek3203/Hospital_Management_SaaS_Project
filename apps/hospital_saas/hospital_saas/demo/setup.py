@@ -48,6 +48,7 @@ def run():
 		setup_operations,
 		setup_pharmacy_bills,
 		restock_pharmacy,
+		setup_registers,
 		apply_branding,
 		set_anchor,
 	]
@@ -1181,3 +1182,189 @@ def restock_pharmacy():
 			se = frappe.get_doc({"doctype": "Stock Entry", "stock_entry_type": "Material Receipt", "company": D.COMPANY, "items": rows})
 			se.insert(ignore_permissions=True)
 			se.submit()
+
+
+def setup_registers():
+	"""Front office, ambulance, blood bank, birth/death, TPA and referral records."""
+	if frappe.db.count("Visitor Entry"):
+		return
+	patients = frappe.get_all("Patient", fields=["name", "patient_name", "sex"], filters={"inpatient_status": ["in", ["", None]]})
+	docs = practitioners()
+
+	def ins(doctype, **values):
+		return frappe.get_doc({"doctype": doctype, **values}).insert(ignore_permissions=True)
+
+	def recent(days=30):
+		return getdate(add_days(nowdate(), -rng.randint(0, days)))
+
+	def person():
+		return f"{rng.choice(D.MALE_FIRST + D.FEMALE_FIRST)} {rng.choice(D.LAST_NAMES)}"
+
+	# Front office
+	for i in range(30):
+		day = getdate() if i < 6 else recent(10)
+		ins(
+			"Visitor Entry",
+			purpose=rng.choice(["Patient visit", "Patient visit", "Meeting", "Delivery", "Interview"]),
+			visitor_name=person(),
+			phone=random_phone(),
+			number_of_persons=rng.choice([1, 1, 2, 3]),
+			person_to_meet=rng.choice([p.patient_name for p in patients[:20]] + ["Accounts office", "HR office"]),
+			visit_date=day,
+			in_time=time(rng.randint(9, 18), rng.choice([0, 15, 30, 45])),
+		)
+	for _ in range(20):
+		ins(
+			"Phone Call Log",
+			caller_name=person(),
+			phone=random_phone(),
+			call_date=recent(14),
+			call_type=rng.choice(["Incoming", "Incoming", "Outgoing"]),
+			description=rng.choice(["Asked about cardiology chamber time", "Appointment rescheduling", "Lab report availability", "Ambulance enquiry", "Bed availability for ICU"]),
+		)
+	for _ in range(15):
+		ins(
+			"Postal Record",
+			direction=rng.choice(["Receive", "Dispatch"]),
+			title=rng.choice(["DGHS, Dhaka", "Square Pharmaceuticals Ltd.", "Delta Health Cover", "City Corporation", "Patient family"]),
+			reference_no=f"REF/{rng.randint(1000, 9999)}",
+			postal_date=recent(30),
+		)
+	for status in ["Open", "Open", "In Progress", "Resolved", "Resolved", "Resolved", "Resolved", "In Progress"]:
+		ins(
+			"Complaint Entry",
+			complaint_type=rng.choice(["Billing", "Cleanliness", "Waiting time", "Staff behaviour", "Food"]),
+			source=rng.choice(["In person", "Phone", "Email"]),
+			complainant=person(),
+			phone=random_phone(),
+			complaint_date=recent(20),
+			description=rng.choice(["Waited more than an hour for the doctor.", "Washroom on level 3 needs cleaning.", "Charged twice for a lab test.", "Food served cold in the cabin."]),
+			assigned_to=rng.choice(["Front desk supervisor", "Housekeeping", "Accounts"]),
+			action_taken="Apologised and resolved." if status == "Resolved" else None,
+			status=status,
+		)
+
+	# Ambulance
+	vehicles = []
+	for number, model, kind, driver in [
+		("DHAKA METRO-CHA-11-2345", "Toyota HiAce", "Advanced life support", "Abdul Karim"),
+		("DHAKA METRO-CHA-15-8812", "Toyota HiAce", "Basic life support", "Jalal Uddin"),
+		("DHAKA METRO-CHA-19-4471", "Nissan Urvan", "Patient transport", "Sohrab Hossain"),
+		("DHAKA METRO-CHA-21-0098", "Toyota HiAce", "Basic life support", "Mizanur Rahman"),
+	]:
+		vehicles.append(ins("Ambulance Vehicle", vehicle_number=number, vehicle_model=model, year_made=rng.randint(2016, 2023), vehicle_type=kind, driver_name=driver, driver_phone=random_phone(), status="Available").name)
+	for i in range(22):
+		ins(
+			"Ambulance Call",
+			patient=rng.choice(patients).name,
+			vehicle=rng.choice(vehicles),
+			call_date=getdate() if i < 2 else recent(30),
+			call_time=time(rng.randint(0, 23), rng.choice([0, 15, 30, 45])),
+			pickup=rng.choice(D.AREAS),
+			destination=rng.choice(["CityCare Dhanmondi", "CityCare Uttara", "Patient home"]),
+			distance_km=rng.randint(3, 40),
+			charge=rng.choice([1500, 2000, 2500, 3500, 5000]),
+			status="Booked" if i < 2 else rng.choice(["Completed", "Completed", "Completed", "Cancelled"]),
+		)
+
+	# Blood bank
+	groups = ["A Positive", "B Positive", "O Positive", "AB Positive", "A Negative", "B Negative", "O Negative", "AB Negative"]
+	weights = [22, 30, 30, 8, 2, 3, 3, 2]
+	donors = []
+	for _ in range(25):
+		gender = rng.choice(["Male", "Male", "Female"])
+		donors.append(
+			ins(
+				"Blood Donor",
+				donor_name=f"{rng.choice(D.MALE_FIRST if gender == 'Male' else D.FEMALE_FIRST)} {rng.choice(D.LAST_NAMES)}",
+				blood_group=rng.choices(groups, weights)[0],
+				gender=gender,
+				date_of_birth=add_days(nowdate(), -365 * rng.randint(19, 50)),
+				phone=random_phone(),
+				address=rng.choice(D.AREAS),
+				last_donation=recent(60),
+			)
+		)
+	bags = []
+	for i in range(45):
+		donor = rng.choice(donors)
+		collected = recent(35)
+		component = rng.choices(["Whole Blood", "Packed Red Cells", "Platelets", "Fresh Frozen Plasma"], [45, 30, 15, 10])[0]
+		life = {"Whole Blood": 35, "Packed Red Cells": 42, "Platelets": 5, "Fresh Frozen Plasma": 365}[component]
+		expiry = add_days(collected, life)
+		bags.append(
+			ins(
+				"Blood Bag",
+				bag_no=f"BB-{collected.strftime('%y%m')}-{i + 1:03d}",
+				blood_group=donor.blood_group,
+				component=component,
+				donor=donor.name,
+				collection_date=collected,
+				expiry_date=expiry,
+				volume_ml=450 if component == "Whole Blood" else 250,
+				status="Expired" if getdate(expiry) < getdate() else "Available",
+			)
+		)
+	for bag in rng.sample([b for b in bags if b.status == "Available"], 10):
+		ins("Blood Issue", patient=rng.choice(patients).name, bag=bag.name, issue_date=recent(20), doctor=rng.choice(docs).name, charge=rng.choice([1200, 1500, 2500]))
+
+	# Birth and death
+	mothers = [p for p in patients if p.sex == "Female"]
+	for i in range(6):
+		gender = rng.choice(["Male", "Female"])
+		mother = rng.choice(mothers)
+		ins(
+			"Birth Record",
+			child_name=f"Baby of {mother.patient_name.split()[0]}" if i % 2 else f"{rng.choice(D.MALE_FIRST if gender == 'Male' else D.FEMALE_FIRST)} {mother.patient_name.split()[-1]}",
+			gender=gender,
+			weight=round(rng.uniform(2.4, 3.8), 2),
+			birth_date=recent(40),
+			birth_time=time(rng.randint(0, 23), rng.choice([0, 10, 25, 40, 55])),
+			mother=mother.name,
+			father_name=f"{rng.choice(D.MALE_FIRST)} {mother.patient_name.split()[-1]}",
+			delivery_type=rng.choice(["Normal", "Caesarean", "Caesarean"]),
+			attending_doctor=next((d.name for d in docs if d.department == "Gynaecology"), docs[0].name),
+			address=rng.choice(D.AREAS),
+		)
+	for cause in ["Cardiac arrest following acute myocardial infarction", "Septic shock with multi-organ failure"]:
+		ins(
+			"Death Record",
+			patient=rng.choice(patients).name,
+			death_date=recent(45),
+			death_time=time(rng.randint(0, 23), rng.choice([5, 20, 35, 50])),
+			guardian_name=person(),
+			cause=cause,
+			certified_by=next((d.name for d in docs if d.department == "Cardiology"), docs[0].name),
+		)
+
+	# TPA and referral
+	for name, code, contact, disc in [
+		("Delta Health Cover", "DHC", "Nahid Hasan", 10),
+		("Shield Life Insurance", "SLI", "Farida Yasmin", 8),
+		("Padma Care TPA", "PCT", "Rezwan Ahmed", 12),
+		("Meghna Health Assurance", "MHA", "Sharif Uddin", 5),
+		("Corporate Staff Health Plan", "CSHP", "Lubna Karim", 15),
+	]:
+		ins("TPA Organisation", organisation_name=name, code=code, contact_person=contact, phone=random_phone(), email=f"claims@{code.lower()}.test", discount_percent=disc)
+	persons = [
+		ins("Referral Person", person_name=name, category=cat, phone=random_phone(), address=rng.choice(D.AREAS), commission_percent=pct)
+		for name, cat, pct in [
+			("Dr. Abul Kalam (GP, Mirpur)", "Doctor", 10),
+			("Shapla Diagnostic Centre", "Clinic", 8),
+			("Dr. Rina Sultana (GP, Savar)", "Doctor", 10),
+			("Mohammad Ali (agent)", "Agent", 5),
+			("Gazipur Community Hospital", "Hospital", 7),
+			("Dr. Faisal Rahman (GP, Badda)", "Doctor", 12),
+		]
+	]
+	invoices = frappe.get_all("Sales Invoice", filters={"docstatus": 1}, fields=["name", "patient", "grand_total", "posting_date"], order_by="posting_date desc", limit=40)
+	for inv in rng.sample(invoices, 14):
+		ins(
+			"Referral Payment",
+			referral_person=rng.choice(persons).name,
+			patient=inv.patient,
+			bill=inv.name,
+			bill_amount=inv.grand_total,
+			payment_date=inv.posting_date,
+			status=rng.choice(["Paid", "Paid", "Unpaid"]),
+		)

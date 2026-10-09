@@ -30,6 +30,14 @@ const routes = [
 	{ path: "/lab/:name", name: "LabTest", component: () => import("./pages/LabTest.vue"), props: true },
 	{ path: "/lab/:name/report", name: "LabReport", component: () => import("./pages/LabReport.vue"), props: true, meta: { bare: true } },
 	{ path: "/pharmacy", name: "Pharmacy", component: () => import("./pages/Pharmacy.vue") },
+	{ path: "/r/:registerKey", name: "Register", component: () => import("./pages/RegisterPage.vue"), props: true },
+	{
+		path: "/r/:registerKey/:name/certificate",
+		name: "Certificate",
+		component: () => import("./pages/CertificatePrint.vue"),
+		props: true,
+		meta: { bare: true },
+	},
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

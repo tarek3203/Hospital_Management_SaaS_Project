@@ -1,0 +1,115 @@
+{
+ "doctype": "DocType",
+ "name": "Blood Bag",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "field:bag_no",
+ "naming_rule": "By fieldname",
+ "title_field": "bag_no",
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "owner": "Administrator",
+ "creation": "2026-10-10 07:00:00.000000",
+ "modified": "2026-10-10 07:00:00.000000",
+ "field_order": [
+  "bag_no",
+  "blood_group",
+  "component",
+  "donor",
+  "collection_date",
+  "expiry_date",
+  "volume_ml",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "bag_no",
+   "fieldtype": "Data",
+   "label": "Bag no",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "blood_group",
+   "fieldtype": "Select",
+   "label": "Blood group",
+   "options": "A Positive\nA Negative\nB Positive\nB Negative\nO Positive\nO Negative\nAB Positive\nAB Negative",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "component",
+   "fieldtype": "Select",
+   "label": "Component",
+   "options": "Whole Blood\nPacked Red Cells\nPlatelets\nFresh Frozen Plasma\nCryoprecipitate",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "donor",
+   "fieldtype": "Link",
+   "label": "Donor",
+   "options": "Blood Donor"
+  },
+  {
+   "fieldname": "collection_date",
+   "fieldtype": "Date",
+   "label": "Collected on",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expires on",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "volume_ml",
+   "fieldtype": "Int",
+   "label": "Volume (ml)"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nIssued\nExpired\nDiscarded",
+   "default": "Available",
+   "in_list_view": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Laboratory User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  }
+ ]
+}

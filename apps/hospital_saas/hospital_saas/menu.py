@@ -30,18 +30,47 @@ MENU = [
 	{"key": "pharmacy", "label": "Pharmacy", "icon": "package", "jobs": [SA, AD, PH, ACC, REC], "route": "/pharmacy"},
 	{"key": "pathology", "label": "Pathology", "icon": "droplet", "jobs": [SA, AD, DOC, PATH, ACC, REC], "route": "/pathology"},
 	{"key": "radiology", "label": "Radiology", "icon": "aperture", "jobs": [SA, AD, DOC, RAD, ACC, REC], "route": "/radiology"},
-	{"key": "blood-bank", "label": "Blood Bank", "icon": "heart", "jobs": [SA, AD, DOC, PH, PATH, ACC, REC], "phase": 4},
-	{"key": "ambulance", "label": "Ambulance", "icon": "truck", "jobs": [SA, AD, DOC, ACC, REC], "phase": 4},
-	{"key": "front-office", "label": "Front Office", "icon": "user-check", "jobs": [SA, AD, REC], "phase": 4},
+	{
+		"key": "blood-bank",
+		"label": "Blood Bank",
+		"icon": "heart",
+		"jobs": [SA, AD, DOC, PH, PATH, ACC, REC],
+		"children": [
+			{"key": "blood-bags", "label": "Blood Stock", "route": "/r/blood-bags"},
+			{"key": "blood-issues", "label": "Blood Issue", "route": "/r/blood-issues"},
+			{"key": "blood-donors", "label": "Donors", "route": "/r/blood-donors"},
+		],
+	},
+	{
+		"key": "ambulance",
+		"label": "Ambulance",
+		"icon": "truck",
+		"jobs": [SA, AD, DOC, ACC, REC],
+		"children": [
+			{"key": "ambulance-calls", "label": "Ambulance Calls", "route": "/r/ambulance-calls"},
+			{"key": "ambulances", "label": "Vehicles", "route": "/r/ambulances"},
+		],
+	},
+	{
+		"key": "front-office",
+		"label": "Front Office",
+		"icon": "user-check",
+		"jobs": [SA, AD, REC],
+		"children": [
+			{"key": "visitors", "label": "Visitor Book", "route": "/r/visitors"},
+			{"key": "calls", "label": "Phone Call Log", "route": "/r/calls"},
+			{"key": "postal", "label": "Postal Receive / Dispatch", "route": "/r/postal"},
+			{"key": "complaints", "label": "Complaints", "route": "/r/complaints"},
+		],
+	},
 	{
 		"key": "birth-death",
 		"label": "Birth & Death Record",
 		"icon": "file",
 		"jobs": [SA, AD, DOC, REC],
-		"phase": 4,
 		"children": [
-			{"key": "birth-record", "label": "Birth Record", "phase": 4},
-			{"key": "death-record", "label": "Death Record", "phase": 4},
+			{"key": "births", "label": "Birth Record", "route": "/r/births"},
+			{"key": "deaths", "label": "Death Record", "route": "/r/deaths"},
 		],
 	},
 	{
@@ -70,8 +99,17 @@ MENU = [
 			{"key": "annual-calendar", "label": "Annual Calendar", "jobs": [SA, AD], "desk": "/desk/holiday-list"},
 		],
 	},
-	{"key": "referral", "label": "Referral", "icon": "share-2", "jobs": [SA, AD, ACC], "phase": 3},
-	{"key": "tpa", "label": "TPA Management", "icon": "shield", "jobs": [SA, AD, DOC, ACC, REC], "phase": 3},
+	{
+		"key": "referral",
+		"label": "Referral",
+		"icon": "share-2",
+		"jobs": [SA, AD, ACC],
+		"children": [
+			{"key": "referral-payments", "label": "Referral Payments", "route": "/r/referral-payments"},
+			{"key": "referral-persons", "label": "Referral Persons", "route": "/r/referral-persons"},
+		],
+	},
+	{"key": "tpa", "label": "TPA Management", "icon": "shield", "jobs": [SA, AD, DOC, ACC, REC], "route": "/r/tpa"},
 	{
 		"key": "finance",
 		"label": "Finance",

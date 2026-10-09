@@ -78,6 +78,7 @@ const expanded = reactive({})
 
 function isActive(item) {
 	if (item.route) return item.route === "/" ? route.path === "/" : route.path.startsWith(item.route)
+	if (item.children) return item.children.some((c) => c.route && route.path.startsWith(c.route))
 	return route.name === "ComingSoon" && route.params.moduleKey === item.key
 }
 

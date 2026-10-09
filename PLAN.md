@@ -288,11 +288,24 @@ walkthrough update. Estimates assume one developer with AI assistance.
   sales, restocked stores with two items under reorder level
 - [ ] Pharmacy returns
 - Hospital Charges: categories, price lists by patient type
-- TPA organisations, rates, claims; referral persons and commission payouts
+- [x] TPA organisations (with agreed discount) and referral persons and
+  commission payments, as registers
+- [ ] TPA rates per service and claim tracking, automatic referral commission
+  from bills
 
 ### Phase 4: Support modules (2.5 weeks)
-- Blood Bank, Ambulance, Front Office, Birth and Death records
-- Certificates, patient and staff ID cards (QR/barcode)
+- [x] Generic register screens (`/hms/r/<register>`) driven by DocType meta:
+  list with search and grouped counts, add/edit form with linked-record
+  search. Fourteen new DocTypes: Visitor Entry, Phone Call Log, Postal
+  Record, Complaint Entry, Birth Record, Death Record, Ambulance Vehicle,
+  Ambulance Call, Blood Donor, Blood Bag, Blood Issue, TPA Organisation,
+  Referral Person, Referral Payment
+- [x] Blood bank: stock by group, issuing a bag marks it issued, bags past
+  expiry are expired by the nightly job; ambulance calls count on the
+  patient page; birth and death certificates (print)
+- [x] Demo data for every register
+- [ ] Certificates menu, patient and staff ID cards (QR/barcode); blood bank
+  and ambulance charges on bills
 
 ### Phase 5: HR extras and finance (1 week)
 - QR attendance, duty roster, annual calendar, simplified income/expense,

@@ -62,6 +62,7 @@ def roll_forward():
 	shift_dates(days)
 	sync_fiscal_years()
 	reopen_current_appointments()
+	expire_blood_bags()
 	set_anchor()
 	frappe.db.commit()
 	frappe.clear_cache()
@@ -128,4 +129,13 @@ def reopen_current_appointments():
 		"""update `tabPatient Appointment` set status = 'Scheduled'
 		where status in ('No Show', 'Open') and appointment_date > %s""",
 		today,
+	)
+
+
+def expire_blood_bags():
+	"""Bags past their expiry date leave the available stock, as they would in a real bank."""
+	frappe.db.sql(
+		"""update `tabBlood Bag` set status = 'Expired'
+		where status = 'Available' and expiry_date < %s""",
+		nowdate(),
 	)
