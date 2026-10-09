@@ -384,6 +384,7 @@ def save_consultation(appointment: str, data: dict | str, submit: int = 0):
 	"""Create or update the visit's Patient Encounter; submit to finalise it."""
 	data = frappe.parse_json(data)
 	appt = frappe.get_doc("Patient Appointment", appointment)
+	appt.check_permission("read")
 	name = frappe.db.get_value("Patient Encounter", {"appointment": appointment, "docstatus": 0})
 	if frappe.db.exists("Patient Encounter", {"appointment": appointment, "docstatus": 1}):
 		frappe.throw(_("This visit's consultation is already completed."))
@@ -447,6 +448,7 @@ def ensure_masters(doctype, fieldname, values):
 @frappe.whitelist(methods=["POST"])
 def add_vitals(appointment: str, temperature=None, pulse=None, respiratory_rate=None, bp_systolic=None, bp_diastolic=None, height=None, weight=None, note=None):
 	appt = frappe.get_doc("Patient Appointment", appointment)
+	appt.check_permission("read")
 	vitals = frappe.get_doc(
 		{
 			"doctype": "Vital Signs",
@@ -474,6 +476,7 @@ def add_vitals(appointment: str, temperature=None, pulse=None, respiratory_rate=
 def add_payment(invoice: str, amount: float, mode_of_payment: str, reference_no: str | None = None):
 	from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
+	frappe.get_doc("Sales Invoice", invoice).check_permission("read")
 	outstanding = flt(frappe.db.get_value("Sales Invoice", invoice, "outstanding_amount"))
 	amount = flt(amount)
 	if amount <= 0 or amount > outstanding:

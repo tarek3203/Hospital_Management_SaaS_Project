@@ -436,6 +436,7 @@ def nurse_notes(record):
 def add_nurse_note(record: str, note: str):
 	doc = frappe.get_doc("Inpatient Record", record)
 	doc.check_permission("read")
+	check_patient(doc.patient)
 	pmr = frappe.get_doc(
 		{
 			"doctype": "Patient Medical Record",
@@ -455,6 +456,7 @@ def add_nurse_note(record: str, note: str):
 def add_advance(record: str, amount: float, mode_of_payment: str, reference_no: str | None = None):
 	"""Deposit against the stay; applied to the final bill at discharge."""
 	frappe.has_permission("Payment Entry", "create", throw=True)
+	frappe.get_doc("Inpatient Record", record).check_permission("read")
 	return make_advance(record, amount, mode_of_payment, reference_no)
 
 
@@ -492,6 +494,9 @@ def save_round(record: str, data: dict | str):
 	"""Doctor's ward round: a submitted encounter linked to the stay."""
 	data = frappe.parse_json(data)
 	doc = frappe.get_doc("Inpatient Record", record)
+	doc.check_permission("read")
+	if doc.status not in ACTIVE:
+		frappe.throw(_("Patient is not admitted."))
 	enc = frappe.get_doc(
 		{
 			"doctype": "Patient Encounter",
@@ -524,6 +529,7 @@ def save_round(record: str, data: dict | str):
 @frappe.whitelist(methods=["POST"])
 def add_ipd_vitals(record: str, **values):
 	doc = frappe.get_doc("Inpatient Record", record)
+	doc.check_permission("read")
 	vitals = frappe.get_doc(
 		{
 			"doctype": "Vital Signs",

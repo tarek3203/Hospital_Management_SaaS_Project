@@ -9,10 +9,11 @@ def default_company():
 	return frappe.defaults.get_user_default("company") or frappe.defaults.get_global_default("company")
 
 
-def create_invoice(patient, items, posting_date=None, mode_of_payment=None, paid_amount=None, reference_no=None):
+def create_invoice(patient, items, posting_date=None, mode_of_payment=None, paid_amount=None, reference_no=None, discount_amount=0):
 	"""Submit a Sales Invoice for `patient` and, if paid, a Payment Entry against it.
 
-	items: [{"item_code", "qty", "rate"}]. Returns the invoice name.
+	items: [{"item_code", "qty", "rate"}]. paid_amount None with a mode of
+	payment means paid in full. Returns the invoice name.
 	"""
 	posting_date = posting_date or nowdate()
 	company = default_company()
@@ -26,11 +27,15 @@ def create_invoice(patient, items, posting_date=None, mode_of_payment=None, paid
 			"posting_date": posting_date,
 			"due_date": add_days(posting_date, 7),
 			"items": items,
+			"apply_discount_on": "Grand Total",
+			"discount_amount": flt(discount_amount),
 		}
 	)
 	invoice.insert()
 	invoice.submit()
 
+	if mode_of_payment and paid_amount is None:
+		paid_amount = invoice.grand_total
 	if mode_of_payment and flt(paid_amount) > 0:
 		payment = get_payment_entry("Sales Invoice", invoice.name)
 		payment.mode_of_payment = mode_of_payment
