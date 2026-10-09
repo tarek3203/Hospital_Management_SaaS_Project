@@ -23,7 +23,7 @@ STAFF = [SA, AD, DOC, PH, PATH, RAD, ACC, REC, NUR]
 MENU = [
 	{"key": "dashboard", "label": "Dashboard", "icon": "home", "jobs": STAFF, "route": "/"},
 	{"key": "patients", "label": "Patient", "icon": "users", "jobs": STAFF, "route": "/patients"},
-	{"key": "billing", "label": "Billing", "icon": "file-text", "jobs": [SA, AD, DOC, PH, PATH, RAD, ACC, REC], "desk": "/desk/sales-invoice", "phase": 2},
+	{"key": "billing", "label": "Billing", "icon": "file-text", "jobs": [SA, AD, DOC, PH, PATH, RAD, ACC, REC], "route": "/billing"},
 	{"key": "appointments", "label": "Appointment", "icon": "calendar", "jobs": [SA, AD, DOC, ACC, REC], "route": "/appointments"},
 	{"key": "opd", "label": "OPD - Out Patient", "icon": "activity", "jobs": STAFF, "route": "/opd"},
 	{"key": "ipd", "label": "IPD - In Patient", "icon": "layers", "jobs": STAFF, "route": "/ipd"},

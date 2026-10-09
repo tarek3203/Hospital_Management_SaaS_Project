@@ -18,6 +18,7 @@ declare module 'vue' {
     DischargeDialog: typeof import('./src/components/DischargeDialog.vue')['default']
     InfoGrid: typeof import('./src/components/InfoGrid.vue')['default']
     NewAppointmentDialog: typeof import('./src/components/NewAppointmentDialog.vue')['default']
+    NewBillDialog: typeof import('./src/components/NewBillDialog.vue')['default']
     NewPatientDialog: typeof import('./src/components/NewPatientDialog.vue')['default']
     NoteDialog: typeof import('./src/components/NoteDialog.vue')['default']
     PatientHeader: typeof import('./src/components/PatientHeader.vue')['default']

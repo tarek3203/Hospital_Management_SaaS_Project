@@ -75,6 +75,7 @@ EXTRA_PERMISSIONS = {
 	"Patient Encounter": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Receptionist", "Accountant", "Nursing User"]},
 	"Lab Test": {r: PATIENT_READ for r in ["Receptionist", "Accountant", "Nursing User", "Pharmacist", "Radiologist"]},
 	"Patient Medical Record": {"Nursing User": ["read", "write", "create"]},
+	"Sales Invoice": {r: PATIENT_READ for r in ["Physician", "Pathologist", "Radiologist"]},
 	"Vital Signs": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},
 	"Inpatient Record": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},
 	"Healthcare Practitioner": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},

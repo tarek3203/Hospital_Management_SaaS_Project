@@ -259,7 +259,11 @@ walkthrough update. Estimates assume one developer with AI assistance.
   on the IPD bill (Soon), gender-appropriate ward allocation in demo data
 - Radiology module (orders, report templates, images)
 - Operation Theatre (booking, team, notes)
-- Central billing dashboard across OPD, IPD, lab, radiology, pharmacy
+- [x] Central billing (`/hms/billing`): collection and due cards, Smart
+  Hospital's single module billing tiles (Radiology, Pharmacy, Blood Issue
+  and Blood Component marked Soon), OPD/IPD lookup by number, bill list by
+  module and paid status, collect dues, new OPD or pathology bill with
+  discount, printable A5 money receipt
 
 ### Phase 3: Pharmacy, charges, TPA, referral (2.5 weeks)
 - Pharmacy POS bill with batch/expiry and returns
