@@ -45,6 +45,7 @@ def run():
 		bill_todays_queue,
 		enrich_inpatients,
 		setup_lab_worklists,
+		setup_operations,
 		apply_branding,
 		set_anchor,
 	]
@@ -1078,3 +1079,44 @@ def setup_lab_worklists():
 	for name in frappe.get_all("Lab Test", filters={"docstatus": 1, "status": "Completed", "lab_test_group": ["!=", "Radiology"]}, pluck="name"):
 		if rng.random() < 0.7:
 			update_status("Approved", name)
+
+
+def setup_operations():
+	"""Completed operations for some admitted patients and a few booked for tomorrow."""
+	if frappe.db.count("Patient Operation"):
+		return
+	surgeons = {d.department: d.name for d in practitioners()}
+	surgeon_for = {
+		"General Surgery": surgeons.get("General Surgery"),
+		"Orthopaedic": surgeons.get("Orthopaedics"),
+		"Gynaecology and Obstetrics": surgeons.get("Gynaecology"),
+		"ENT": surgeons.get("ENT"),
+	}
+	records = frappe.get_all(
+		"Inpatient Record", filters={"status": "Admitted"}, fields=["name", "patient", "admitted_datetime"], order_by="admitted_datetime asc"
+	)
+	for i, rec in enumerate(records[:8]):
+		name, category, anaesthesia, charge = D.OPERATIONS[i % len(D.OPERATIONS)]
+		admitted = getdate(rec.admitted_datetime)
+		done = i < 5
+		frappe.get_doc(
+			{
+				"doctype": "Patient Operation",
+				"patient": rec.patient,
+				"inpatient_record": rec.name,
+				"operation_name": name,
+				"category": category,
+				"status": "Completed" if done else "Scheduled",
+				"operation_date": add_days(admitted, 1) if done else add_days(nowdate(), 1),
+				"operation_time": time(rng.choice([9, 11, 14]), 0),
+				"ot_room": rng.choice(["OT-1", "OT-2", "OT-3"]),
+				"surgeon": surgeon_for.get(category) or rng.choice(practitioners()).name,
+				"assistant": rng.choice(["Dr. Tanvir Ahmed", "Dr. Nusrat Jahan", "Dr. Imran Hossain"]),
+				"anaesthetist": rng.choice(D.ANAESTHETISTS),
+				"anaesthesia_type": anaesthesia,
+				"pre_op_notes": "Consent taken. NPO from midnight. Pre-op investigations reviewed.",
+				"operation_notes": "Procedure done under aseptic precautions. No intra-operative complications." if done else None,
+				"result": "Stable, shifted to post-op ward." if done else None,
+				"charge": charge,
+			}
+		).insert(ignore_permissions=True)

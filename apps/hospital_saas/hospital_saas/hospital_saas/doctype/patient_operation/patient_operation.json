@@ -1,0 +1,275 @@
+{
+ "doctype": "DocType",
+ "name": "Patient Operation",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "format:OT-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "track_changes": 1,
+ "title_field": "operation_name",
+ "search_fields": "patient_name,operation_name",
+ "sort_field": "operation_date",
+ "sort_order": "DESC",
+ "engine": "InnoDB",
+ "modified": "2026-10-10 06:00:00.000000",
+ "owner": "Administrator",
+ "creation": "2026-10-10 06:00:00.000000",
+ "field_order": [
+  "patient",
+  "patient_name",
+  "inpatient_record",
+  "appointment",
+  "cb1",
+  "operation_name",
+  "category",
+  "status",
+  "sb_schedule",
+  "operation_date",
+  "operation_time",
+  "ot_room",
+  "cb2",
+  "surgeon",
+  "surgeon_name",
+  "assistant",
+  "anaesthetist",
+  "anaesthesia_type",
+  "sb_notes",
+  "pre_op_notes",
+  "operation_notes",
+  "result",
+  "charge"
+ ],
+ "fields": [
+  {
+   "fieldname": "patient",
+   "fieldtype": "Link",
+   "label": "Patient",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "options": "Patient"
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "fetch_from": "patient.patient_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "inpatient_record",
+   "fieldtype": "Link",
+   "label": "IPD No",
+   "options": "Inpatient Record"
+  },
+  {
+   "fieldname": "appointment",
+   "fieldtype": "Link",
+   "label": "OPD No",
+   "options": "Patient Appointment"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break",
+   "label": ""
+  },
+  {
+   "fieldname": "operation_name",
+   "fieldtype": "Data",
+   "label": "Operation",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "General Surgery\nOrthopaedic\nGynaecology and Obstetrics\nENT\nOphthalmology\nUrology\nCardiothoracic\nNeurosurgery\nOther"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Scheduled\nIn Progress\nCompleted\nCancelled",
+   "default": "Scheduled",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sb_schedule",
+   "fieldtype": "Section Break",
+   "label": "Schedule and team"
+  },
+  {
+   "fieldname": "operation_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "operation_time",
+   "fieldtype": "Time",
+   "label": "Time"
+  },
+  {
+   "fieldname": "ot_room",
+   "fieldtype": "Data",
+   "label": "OT Room"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break",
+   "label": ""
+  },
+  {
+   "fieldname": "surgeon",
+   "fieldtype": "Link",
+   "label": "Surgeon",
+   "options": "Healthcare Practitioner",
+   "reqd": 1
+  },
+  {
+   "fieldname": "surgeon_name",
+   "fieldtype": "Data",
+   "label": "Surgeon Name",
+   "fetch_from": "surgeon.practitioner_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "assistant",
+   "fieldtype": "Data",
+   "label": "Assistant"
+  },
+  {
+   "fieldname": "anaesthetist",
+   "fieldtype": "Data",
+   "label": "Anaesthetist"
+  },
+  {
+   "fieldname": "anaesthesia_type",
+   "fieldtype": "Select",
+   "label": "Anaesthesia",
+   "options": "\nGeneral\nSpinal\nEpidural\nRegional block\nLocal\nSedation"
+  },
+  {
+   "fieldname": "sb_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "pre_op_notes",
+   "fieldtype": "Small Text",
+   "label": "Pre-operative notes"
+  },
+  {
+   "fieldname": "operation_notes",
+   "fieldtype": "Text",
+   "label": "Operation notes"
+  },
+  {
+   "fieldname": "result",
+   "fieldtype": "Small Text",
+   "label": "Outcome"
+  },
+  {
+   "fieldname": "charge",
+   "fieldtype": "Currency",
+   "label": "OT Charge"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Physician",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Nursing User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Receptionist",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Accountant",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Pharmacist",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Pathologist",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  },
+  {
+   "role": "Radiologist",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1,
+   "export": 0
+  }
+ ]
+}

@@ -91,7 +91,7 @@
 				</template>
 			</DataTable>
 
-			<SoonPanel v-else-if="tab === 'operations'" title="Operations" description="Operation theatre bookings, surgical team, anaesthesia and operation notes for this admission." />
+			<OperationsPanel v-else-if="tab === 'operations'" :patient="d.patient.name" :record="record" :default-surgeon="d.stay.practitioner" :editable="d.can.manage" />
 
 			<DataTable v-else-if="tab === 'charges'" :columns="chargeColumns" :rows="d.charges" empty-text="No charges yet">
 				<template #footer>
@@ -141,6 +141,7 @@ import DataTable from "@/components/DataTable.vue"
 import DischargeDialog from "@/components/DischargeDialog.vue"
 import InfoGrid from "@/components/InfoGrid.vue"
 import NoteDialog from "@/components/NoteDialog.vue"
+import OperationsPanel from "@/components/OperationsPanel.vue"
 import PatientHeader from "@/components/PatientHeader.vue"
 import SoonBadge from "@/components/SoonBadge.vue"
 import SoonPanel from "@/components/SoonPanel.vue"
@@ -202,7 +203,7 @@ const tabs = computed(() => [
 	{ key: "medication", label: "Medication", icon: "package" },
 	{ key: "register", label: "Consultant Register", icon: "clipboard", count: d.value.rounds.length },
 	{ key: "labs", label: "Lab Investigation", icon: "droplet" },
-	{ key: "operations", label: "Operations", icon: "scissors", soon: true },
+	{ key: "operations", label: "Operations", icon: "scissors" },
 	{ key: "charges", label: "Charges", icon: "file-text" },
 	{ key: "payments", label: "Payments", icon: "credit-card" },
 	{ key: "live", label: "Live Consultation", icon: "video", soon: true },

@@ -178,6 +178,18 @@ RADIOLOGY_TESTS = [
 	]),
 ]
 
+# Operations: (name, category, anaesthesia, charge)
+OPERATIONS = [
+	("Laparoscopic cholecystectomy", "General Surgery", "General", 45000),
+	("Appendicectomy", "General Surgery", "Spinal", 30000),
+	("Open reduction and internal fixation, tibia", "Orthopaedic", "Spinal", 60000),
+	("Caesarean section", "Gynaecology and Obstetrics", "Spinal", 40000),
+	("Tonsillectomy", "ENT", "General", 20000),
+	("Inguinal hernia repair (mesh)", "General Surgery", "Spinal", 35000),
+	("Total knee replacement", "Orthopaedic", "Spinal", 250000),
+]
+ANAESTHETISTS = ["Dr. Kazi Nurul Amin", "Dr. Selina Haque", "Dr. Mostafa Kamal"]
+
 # Pharmacy items: (code, name, dosage form, rate, opening qty, reorder level)
 PHARMACY_ITEMS = [
 	("NAPA-500", "Napa 500mg (Paracetamol)", "Tablet", 1.2, 5000, 1000),

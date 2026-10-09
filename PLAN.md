@@ -268,7 +268,11 @@ walkthrough update. Estimates assume one developer with AI assistance.
   reports, today's pending queue for both labs, most past reports approved
 - [x] Fix: upstream Patient History Settings typed Lab Test "Comments" as a
   table, which broke submitting any lab test with a comment
-- Operation Theatre (booking, team, notes)
+- [x] Operation theatre: new `Patient Operation` DocType; Operations tab on
+  OPD visits and IPD stays with booking, surgeon/assistant/anaesthetist,
+  anaesthesia, OT room, status, pre-op and operation notes, outcome, charge.
+  Consent upload and OT billing marked Soon. Demo: 5 completed operations,
+  3 booked for tomorrow
 - [x] Central billing (`/hms/billing`): collection and due cards, Smart
   Hospital's single module billing tiles (Radiology, Pharmacy, Blood Issue
   and Blood Component marked Soon), OPD/IPD lookup by number, bill list by

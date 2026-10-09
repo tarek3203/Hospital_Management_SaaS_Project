@@ -109,7 +109,7 @@
 				<DataTable :columns="payColumns" :rows="data.payments" empty-text="No payments yet" />
 			</div>
 
-			<SoonPanel v-else-if="tab === 'operations'" title="Operations" description="Book operation theatre slots for this visit, record the surgical team, anaesthesia and operation notes." />
+			<OperationsPanel v-else-if="tab === 'operations'" :patient="data.patient.name" :appointment="appointment" :default-surgeon="data.visit.practitioner" />
 			<SoonPanel v-else-if="tab === 'live'" title="Live consultation" description="Video consultation with the doctor from this visit, with the meeting link sent to the patient by SMS." />
 			<Timeline v-else-if="tab === 'timeline'" :patient="data.patient.name" :entries="timeline.data" :can-add="canNote" @added="timeline.reload()" />
 			<VitalsTable v-else-if="tab === 'vitals'" :rows="data.vitals" />
@@ -136,6 +136,7 @@ import ConsultationDialog from "@/components/ConsultationDialog.vue"
 import DataTable from "@/components/DataTable.vue"
 import InfoGrid from "@/components/InfoGrid.vue"
 import PatientHeader from "@/components/PatientHeader.vue"
+import OperationsPanel from "@/components/OperationsPanel.vue"
 import PaymentDialog from "@/components/PaymentDialog.vue"
 import SoonPanel from "@/components/SoonPanel.vue"
 import TabBar from "@/components/TabBar.vue"
@@ -190,7 +191,7 @@ const tabs = computed(() => [
 	{ key: "overview", label: "Overview", icon: "grid" },
 	{ key: "medication", label: "Medication", icon: "package", count: c.value?.medicines.length || 0 },
 	{ key: "labs", label: "Lab Investigation", icon: "droplet" },
-	{ key: "operations", label: "Operations", icon: "scissors", soon: true },
+	{ key: "operations", label: "Operations", icon: "scissors" },
 	{ key: "charges", label: "Charges", icon: "file-text" },
 	{ key: "payments", label: "Payments", icon: "credit-card" },
 	{ key: "live", label: "Live Consultation", icon: "video", soon: true },
