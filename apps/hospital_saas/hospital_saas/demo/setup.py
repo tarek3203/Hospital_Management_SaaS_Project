@@ -46,6 +46,8 @@ def run():
 		enrich_inpatients,
 		setup_lab_worklists,
 		setup_operations,
+		setup_pharmacy_bills,
+		restock_pharmacy,
 		apply_branding,
 		set_anchor,
 	]
@@ -1120,3 +1122,62 @@ def setup_operations():
 				"charge": charge,
 			}
 		).insert(ignore_permissions=True)
+
+
+def setup_pharmacy_bills():
+	"""A month of pharmacy sales from consultation prescriptions, issued from stock."""
+	from hospital_saas.api.pharmacy import qty_for
+	from hospital_saas.billing import create_invoice
+
+	if frappe.db.exists("Sales Invoice", {"remarks": "Pharmacy bill"}):
+		return
+	store = frappe.db.get_value("Warehouse", {"warehouse_name": "Pharmacy DHN", "company": D.COMPANY})
+	rates = {code: rate for code, _n, _f, rate, *_ in D.PHARMACY_ITEMS}
+	encounters = frappe.get_all(
+		"Patient Encounter",
+		filters={"docstatus": 1, "inpatient_record": ["is", "not set"], "encounter_date": [">=", add_days(nowdate(), -30)]},
+		fields=["name", "patient", "encounter_date"],
+		order_by="encounter_date asc",
+	)
+	for enc in encounters:
+		if rng.random() > 0.6:
+			continue
+		lines = [
+			{"item_code": d.drug_code, "qty": min(qty_for(d.dosage, d.period), 30), "rate": rates.get(d.drug_code, 1)}
+			for d in frappe.get_all("Drug Prescription", filters={"parent": enc.name}, fields=["drug_code", "dosage", "period"])
+			if d.drug_code
+		]
+		if not lines:
+			continue
+		frappe.db.savepoint("pharmacy_bill")
+		try:
+			create_invoice(
+				enc.patient,
+				lines,
+				posting_date=enc.encounter_date,
+				mode_of_payment=rng.choices(D.MODES_OF_PAYMENT, weights=[60, 25, 10, 5])[0],
+				warehouse=store,
+				remarks="Pharmacy bill",
+			)
+		except frappe.ValidationError:
+			# Not enough stock for this one; skip it.
+			frappe.db.rollback(save_point="pharmacy_bill")
+			frappe.clear_last_message()
+
+
+def restock_pharmacy():
+	"""Top stores up to a healthy level after a month of sales, keeping two
+	items just under their reorder level so the low-stock alerts show."""
+	low_items = {"MONTE-10", "INS-RAPID"}
+	for wh_name in ("Pharmacy DHN", "Pharmacy UTR"):
+		store = frappe.db.get_value("Warehouse", {"warehouse_name": wh_name, "company": D.COMPANY})
+		rows = []
+		for code, _n, _f, rate, qty, reorder in D.PHARMACY_ITEMS:
+			current = flt(frappe.db.get_value("Bin", {"item_code": code, "warehouse": store}, "actual_qty"))
+			target = reorder - 5 if code in low_items else max(qty, reorder * 4)
+			if target > current:
+				rows.append({"item_code": code, "qty": target - current, "t_warehouse": store, "basic_rate": round(rate * 0.75, 2)})
+		if rows:
+			se = frappe.get_doc({"doctype": "Stock Entry", "stock_entry_type": "Material Receipt", "company": D.COMPANY, "items": rows})
+			se.insert(ignore_permissions=True)
+			se.submit()

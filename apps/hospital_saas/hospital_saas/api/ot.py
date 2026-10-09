@@ -43,9 +43,14 @@ def save_operation(data: dict | str):
 	values["charge"] = flt(values.get("charge"))
 	if data.get("name"):
 		doc = frappe.get_doc("Patient Operation", data["name"])
+		# Who and which visit/stay an operation is for never changes after booking.
+		for key in ("patient", "inpatient_record", "appointment"):
+			values.pop(key, None)
 		doc.update(values)
 		doc.save()
 	else:
+		if not frappe.has_permission("Patient", "read", values.get("patient")):
+			frappe.throw(_("Not permitted"), frappe.PermissionError)
 		doc = frappe.get_doc({"doctype": "Patient Operation", **values})
 		doc.insert()
 	return doc.name

@@ -25,6 +25,7 @@ declare module 'vue' {
     OperationsPanel: typeof import('./src/components/OperationsPanel.vue')['default']
     PatientHeader: typeof import('./src/components/PatientHeader.vue')['default']
     PaymentDialog: typeof import('./src/components/PaymentDialog.vue')['default']
+    PharmacyBillDialog: typeof import('./src/components/PharmacyBillDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SoonBadge: typeof import('./src/components/SoonBadge.vue')['default']

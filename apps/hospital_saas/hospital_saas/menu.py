@@ -27,7 +27,7 @@ MENU = [
 	{"key": "appointments", "label": "Appointment", "icon": "calendar", "jobs": [SA, AD, DOC, ACC, REC], "route": "/appointments"},
 	{"key": "opd", "label": "OPD - Out Patient", "icon": "activity", "jobs": STAFF, "route": "/opd"},
 	{"key": "ipd", "label": "IPD - In Patient", "icon": "layers", "jobs": STAFF, "route": "/ipd"},
-	{"key": "pharmacy", "label": "Pharmacy", "icon": "package", "jobs": [SA, AD, PH, ACC, REC], "desk": "/desk/item?item_group=Pharmacy", "phase": 3},
+	{"key": "pharmacy", "label": "Pharmacy", "icon": "package", "jobs": [SA, AD, PH, ACC, REC], "route": "/pharmacy"},
 	{"key": "pathology", "label": "Pathology", "icon": "droplet", "jobs": [SA, AD, DOC, PATH, ACC, REC], "route": "/pathology"},
 	{"key": "radiology", "label": "Radiology", "icon": "aperture", "jobs": [SA, AD, DOC, RAD, ACC, REC], "route": "/radiology"},
 	{"key": "blood-bank", "label": "Blood Bank", "icon": "heart", "jobs": [SA, AD, DOC, PH, PATH, ACC, REC], "phase": 4},

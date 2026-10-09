@@ -137,7 +137,7 @@ const modules = [
 	{ key: "IPD", label: "IPD", icon: "layers", route: "/ipd" },
 	{ key: "Pathology", label: "Pathology", icon: "droplet", bill: true },
 	{ key: "Radiology", label: "Radiology", icon: "aperture", bill: true },
-	{ key: "Pharmacy", label: "Pharmacy", icon: "package", soon: true },
+	{ key: "Pharmacy", label: "Pharmacy", icon: "package", route: "/pharmacy" },
 	{ key: "Blood Issue", label: "Blood Issue", icon: "heart", soon: true },
 	{ key: "Blood Component", label: "Blood Component Issue", icon: "droplet", soon: true },
 ]

@@ -280,7 +280,13 @@ walkthrough update. Estimates assume one developer with AI assistance.
   discount, printable A5 money receipt
 
 ### Phase 3: Pharmacy, charges, TPA, referral (2.5 weeks)
-- Pharmacy POS bill with batch/expiry and returns
+- [x] Pharmacy (`/hms/pharmacy`): sales cards, pharmacy bills, medicine stock
+  by store with reorder alerts, new pharmacy bill that loads the patient's
+  latest prescription with course quantities and issues stock from the
+  chosen store; receipts. Batch/expiry selection and an in-app purchase
+  screen marked Soon (purchase works in Desk). Demo: a month of pharmacy
+  sales, restocked stores with two items under reorder level
+- [ ] Pharmacy returns
 - Hospital Charges: categories, price lists by patient type
 - TPA organisations, rates, claims; referral persons and commission payouts
 
