@@ -16,6 +16,9 @@
 		</div>
 		<div class="flex-1 sm:hidden" />
 
+		<button class="rounded-md p-2 text-gray-600 hover:bg-gray-100" title="Bed status" @click="router.push('/beds')">
+			<FeatherIcon name="grid" class="h-4 w-4" />
+		</button>
 		<Dropdown v-if="quickActions.length" :options="quickActions" placement="right">
 			<Button variant="solid" class="!bg-brand-600 hover:!bg-brand-700">
 				<template #prefix><FeatherIcon name="plus" class="h-4 w-4" /></template>

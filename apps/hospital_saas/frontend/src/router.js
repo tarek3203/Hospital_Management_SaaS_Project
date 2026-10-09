@@ -14,6 +14,9 @@ const routes = [
 		meta: { bare: true },
 	},
 	{ path: "/opd/visit/:appointment", name: "OpdVisit", component: () => import("./pages/OpdVisit.vue"), props: true },
+	{ path: "/ipd", name: "Ipd", component: () => import("./pages/Ipd.vue") },
+	{ path: "/ipd/:record", name: "IpdStay", component: () => import("./pages/IpdStay.vue"), props: true },
+	{ path: "/beds", name: "BedBoard", component: () => import("./pages/BedBoard.vue") },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

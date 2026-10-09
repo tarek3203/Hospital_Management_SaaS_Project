@@ -16,6 +16,10 @@
 				<PatientHeader :patient="data.patient" :extra="[data.visit.name, `Dr. ${data.visit.practitioner_name}`]">
 					<template #actions>
 						<div class="flex flex-wrap gap-2">
+							<Button v-if="canAdmit && !['Admitted', 'Discharge Scheduled'].includes(data.patient.inpatient_status)" @click="showAdmit = true">
+								<template #prefix><FeatherIcon name="log-in" class="h-4 w-4" /></template>
+								Admit to IPD
+							</Button>
 							<Button v-if="c" @click="$router.push(`/opd/visit/${encodeURIComponent(appointment)}/print`)">
 								<template #prefix><FeatherIcon name="printer" class="h-4 w-4" /></template>
 								Prescription
@@ -110,6 +114,13 @@
 			<Timeline v-else-if="tab === 'timeline'" :patient="data.patient.name" :entries="timeline.data" :can-add="canNote" @added="timeline.reload()" />
 			<VitalsTable v-else-if="tab === 'vitals'" :rows="data.vitals" />
 
+			<AdmitDialog
+				v-model="showAdmit"
+				:patient="data.patient.name"
+				:patient-name="data.patient.patient_name"
+				:practitioner="data.visit.practitioner"
+				:appointment="appointment"
+			/>
 			<ConsultationDialog v-model="showConsult" :appointment="appointment" :consultation="c" @saved="visit.reload()" />
 			<VitalsDialog v-model="showVitals" :appointment="appointment" @saved="visit.reload()" />
 			<PaymentDialog v-model="showPay" :invoice="data.visit.invoice" :due="data.billing.outstanding" @saved="visit.reload()" />
@@ -120,6 +131,7 @@
 <script setup>
 import { computed, ref, watch } from "vue"
 import { Badge, Button, createResource, ErrorMessage, FeatherIcon, LoadingIndicator } from "frappe-ui"
+import AdmitDialog from "@/components/AdmitDialog.vue"
 import ConsultationDialog from "@/components/ConsultationDialog.vue"
 import DataTable from "@/components/DataTable.vue"
 import InfoGrid from "@/components/InfoGrid.vue"
@@ -138,6 +150,8 @@ const tab = ref("overview")
 const showConsult = ref(false)
 const showVitals = ref(false)
 const showPay = ref(false)
+const showAdmit = ref(false)
+const canAdmit = computed(() => ["Super Admin", "Admin", "Receptionist", "Doctor", "Nurse"].includes(session.data.job))
 const canNote = computed(() => ["Super Admin", "Admin", "Doctor", "Nurse", "Receptionist"].includes(session.data.job))
 
 const visit = createResource({

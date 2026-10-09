@@ -16,7 +16,7 @@
 		<template #actions>
 			<div class="flex justify-end gap-2">
 				<Button @click="show = false">Cancel</Button>
-				<Button variant="solid" :loading="save.loading" @click="save.submit({ appointment, ...form })">Save vitals</Button>
+				<Button variant="solid" :loading="save.loading" @click="save.submit(record ? { record, ...form } : { appointment, ...form })">Save vitals</Button>
 			</div>
 		</template>
 	</Dialog>
@@ -27,14 +27,15 @@ import { reactive, watch } from "vue"
 import { Button, createResource, Dialog, ErrorMessage, FormControl, toast } from "frappe-ui"
 
 const show = defineModel({ type: Boolean })
-const props = defineProps({ appointment: String })
+// Either an OPD visit (appointment) or an IPD stay (record).
+const props = defineProps({ appointment: String, record: String })
 const emit = defineEmits(["saved"])
 const blank = { bp_systolic: "", bp_diastolic: "", pulse: "", temperature: "", respiratory_rate: "", height: "", weight: "", note: "" }
 const form = reactive({ ...blank })
 watch(show, (open) => open && Object.assign(form, blank))
 
 const save = createResource({
-	url: "hospital_saas.api.opd.add_vitals",
+	url: props.record ? "hospital_saas.api.ipd.add_ipd_vitals" : "hospital_saas.api.opd.add_vitals",
 	onSuccess() {
 		toast.success("Vitals recorded")
 		show.value = false

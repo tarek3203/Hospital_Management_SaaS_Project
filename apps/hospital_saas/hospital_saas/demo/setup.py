@@ -43,6 +43,7 @@ def run():
 		setup_patient_ids,
 		enrich_clinical_data,
 		bill_todays_queue,
+		enrich_inpatients,
 		apply_branding,
 		set_anchor,
 	]
@@ -202,6 +203,7 @@ def setup_healthcare_settings():
 		("Consultation", "Practitioner", 15, "#0e7c6b"),
 		("Follow Up", "Practitioner", 10, "#3b82f6"),
 		("Lab Visit", "Service Unit", 10, "#f59e0b"),
+		("Ward Round", "Practitioner", 15, "#8b5cf6"),
 	]:
 		ensure(
 			"Appointment Type",
@@ -911,3 +913,89 @@ def setup_hospital_profile():
 				"links": [{"link_doctype": "Company", "link_name": D.COMPANY}],
 			}
 		).insert(ignore_permissions=True)
+
+
+def enrich_inpatients():
+	"""Daily rounds, vitals, nurse notes and an advance deposit for each admitted
+	patient, then discharge the three longest stays so history exists."""
+	from hospital_saas.api.ipd import discharge, make_advance
+
+	ensure("Appointment Type", "Ward Round", appointment_type="Ward Round", allow_booking_for="Practitioner", default_duration=15, color="#8b5cf6")
+	nurse = next((u[0] for u in D.DEMO_USERS if u[3] == "Nurse"), "Administrator")
+	records = frappe.get_all(
+		"Inpatient Record",
+		filters={"status": "Admitted"},
+		fields=["name", "patient", "primary_practitioner", "medical_department", "admitted_datetime", "admission_service_unit_type"],
+		order_by="admitted_datetime asc",
+	)
+	for rec in records:
+		if frappe.db.exists("Patient Encounter", {"inpatient_record": rec.name}):
+			continue
+		admitted = getdate(rec.admitted_datetime)
+		diagnosis = rng.choice(D.DIAGNOSES)
+		meds = rng.sample(D.PHARMACY_ITEMS, 2)
+		day = admitted
+		while day <= getdate():
+			if day > admitted or rec.admitted_datetime.hour < 12:
+				round_ = frappe.get_doc(
+					{
+						"doctype": "Patient Encounter",
+						"patient": rec.patient,
+						"inpatient_record": rec.name,
+						"appointment_type": "Ward Round",
+						"practitioner": rec.primary_practitioner,
+						"medical_department": rec.medical_department,
+						"company": D.COMPANY,
+						"encounter_date": day,
+						"encounter_time": time(10, rng.choice([0, 15, 30, 45])),
+						"encounter_comment": rng.choice(D.CLINICAL_NOTES),
+						"symptoms": [{"complaint": c} for c in rng.sample(D.COMPLAINTS, 1)],
+						"diagnosis": [{"diagnosis": diagnosis}],
+						"drug_prescription": [
+							{"drug_code": code, "drug_name": name, "dosage": rng.choice(["1-0-1", "1-1-1", "0-0-1"]), "period": "1 Week", "dosage_form": form}
+							for code, name, form, *_ in meds
+						],
+					}
+				)
+				round_.insert(ignore_permissions=True)
+				round_.submit()
+			vitals = frappe.get_doc(
+				{
+					"doctype": "Vital Signs",
+					"patient": rec.patient,
+					"inpatient_record": rec.name,
+					"company": D.COMPANY,
+					"signs_date": day,
+					"signs_time": time(8, 0),
+					"temperature": str(round(rng.uniform(97.6, 100.8), 1)),
+					"pulse": str(rng.randint(68, 104)),
+					"respiratory_rate": str(rng.randint(14, 22)),
+					"bp_systolic": str(rng.randint(108, 150)),
+					"bp_diastolic": str(rng.randint(70, 95)),
+				}
+			)
+			vitals.insert(ignore_permissions=True)
+			vitals.submit()
+			note = frappe.get_doc(
+				{
+					"doctype": "Patient Medical Record",
+					"patient": rec.patient,
+					"subject": rng.choice(D.NURSE_NOTES),
+					"communication_date": day,
+					"status": "Open",
+					"reference_doctype": "Inpatient Record",
+					"reference_name": rec.name,
+				}
+			).insert(ignore_permissions=True)
+			frappe.db.set_value("Patient Medical Record", note.name, "owner", nurse, update_modified=False)
+			day = add_days(day, 1)
+
+		amount = D.IPD_ADVANCE.get(rec.admission_service_unit_type, 5000)
+		make_advance(rec.name, amount, rng.choices(D.MODES_OF_PAYMENT, weights=[50, 30, 10, 10])[0], posting_date=admitted)
+		frappe.db.commit()
+
+	if not frappe.db.exists("Inpatient Record", {"status": "Discharged"}):
+		for rec in records[:3]:
+			discharge(rec.name, summary="Condition improved. Continue medicines as advised and review in OPD.", followup_date=add_days(nowdate(), 7), mode_of_payment="Cash")
+			frappe.db.commit()
+

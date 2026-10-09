@@ -89,6 +89,13 @@ EXTRA_PERMISSIONS = {
 }
 
 
+# Fields above permission level 0 (Inpatient Record keeps admission times at
+# level 2, clinical tables at level 1) need their own read rules. doctype -> roles
+EXTRA_HIGHER_LEVEL_READ = {
+	"Inpatient Record": ["Pharmacist", "Pathologist", "Radiologist", "Accountant"],
+}
+
+
 def setup_roles():
 	for role in CUSTOM_ROLES:
 		if not frappe.db.exists("Role", role):
@@ -126,3 +133,10 @@ def setup_roles():
 				add_permission(doctype, role, 0)
 			for ptype in ptypes:
 				update_permission_property(doctype, role, 0, ptype, 1, validate=False)
+
+	for doctype, roles in EXTRA_HIGHER_LEVEL_READ.items():
+		levels = set(frappe.get_all("DocField", filters={"parent": doctype, "permlevel": [">", 0]}, pluck="permlevel"))
+		for role in roles:
+			for level in levels:
+				if not frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role, "permlevel": level}):
+					add_permission(doctype, role, level)

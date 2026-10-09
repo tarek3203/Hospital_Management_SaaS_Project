@@ -102,6 +102,19 @@ CLINICAL_NOTES = [
 	"Check blood pressure at home morning and evening and bring the readings.",
 ]
 
+NURSE_NOTES = [
+	"Patient rested well overnight. IV line patent, no swelling at the site.",
+	"Medicines given on time. Patient tolerated oral diet.",
+	"Complained of mild pain, informed duty doctor. Analgesic given as advised.",
+	"Vitals stable. Encouraged to walk in the ward twice today.",
+	"Dressing changed, wound clean and dry.",
+	"Intake and output charted. Urine output adequate.",
+	"Family counselled about the diet plan and discharge preparation.",
+	"Blood sample collected for the morning tests and sent to the lab.",
+]
+
+IPD_ADVANCE = {"General Ward Bed": 5000, "Private Cabin": 15000, "ICU Bed": 30000}
+
 COMPLAINTS = [
 	"Fever", "Headache", "Cough", "Chest Pain", "Abdominal Pain", "Shortness of Breath",
 	"Joint Pain", "Back Pain", "Skin Rash", "Dizziness", "Vomiting", "Fatigue",

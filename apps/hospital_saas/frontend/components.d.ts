@@ -8,14 +8,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdmitDialog: typeof import('./src/components/AdmitDialog.vue')['default']
+    AdvanceDialog: typeof import('./src/components/AdvanceDialog.vue')['default']
     AppSidebar: typeof import('./src/components/AppSidebar.vue')['default']
     AppTopbar: typeof import('./src/components/AppTopbar.vue')['default']
     ChartCard: typeof import('./src/components/ChartCard.vue')['default']
     ConsultationDialog: typeof import('./src/components/ConsultationDialog.vue')['default']
     DataTable: typeof import('./src/components/DataTable.vue')['default']
+    DischargeDialog: typeof import('./src/components/DischargeDialog.vue')['default']
     InfoGrid: typeof import('./src/components/InfoGrid.vue')['default']
     NewAppointmentDialog: typeof import('./src/components/NewAppointmentDialog.vue')['default']
     NewPatientDialog: typeof import('./src/components/NewPatientDialog.vue')['default']
+    NoteDialog: typeof import('./src/components/NoteDialog.vue')['default']
     PatientHeader: typeof import('./src/components/PatientHeader.vue')['default']
     PaymentDialog: typeof import('./src/components/PaymentDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -26,6 +30,7 @@ declare module 'vue' {
     TabBar: typeof import('./src/components/TabBar.vue')['default']
     TagInput: typeof import('./src/components/TagInput.vue')['default']
     Timeline: typeof import('./src/components/Timeline.vue')['default']
+    TransferDialog: typeof import('./src/components/TransferDialog.vue')['default']
     VisitsTable: typeof import('./src/components/VisitsTable.vue')['default']
     VitalsDialog: typeof import('./src/components/VitalsDialog.vue')['default']
     VitalsTable: typeof import('./src/components/VitalsTable.vue')['default']

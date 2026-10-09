@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model="show" :options="{ title: 'Consultation', size: '4xl' }">
+	<Dialog v-model="show" :options="{ title: round ? 'Ward round' : 'Consultation', size: '4xl' }">
 		<template #body-content>
 			<div v-if="!opts.data" class="py-10 text-center"><LoadingIndicator class="mx-auto h-5 w-5" /></div>
 			<div v-else class="space-y-5">
@@ -83,8 +83,13 @@
 		<template #actions>
 			<div class="flex flex-wrap justify-end gap-2">
 				<Button @click="show = false">Cancel</Button>
-				<Button :loading="save.loading && !finishing" @click="submit(0)">Save draft</Button>
-				<Button variant="solid" :loading="save.loading && finishing" @click="submit(1)">Save and complete visit</Button>
+				<template v-if="round">
+					<Button variant="solid" :loading="save.loading" @click="submit(1)">Save round</Button>
+				</template>
+				<template v-else>
+					<Button :loading="save.loading && !finishing" @click="submit(0)">Save draft</Button>
+					<Button variant="solid" :loading="save.loading && finishing" @click="submit(1)">Save and complete visit</Button>
+				</template>
 			</div>
 		</template>
 	</Dialog>
@@ -97,7 +102,8 @@ import SoonBadge from "@/components/SoonBadge.vue"
 import TagInput from "@/components/TagInput.vue"
 
 const show = defineModel({ type: Boolean })
-const props = defineProps({ appointment: String, consultation: Object })
+// round: an IPD ward round for `record` instead of an OPD visit consultation.
+const props = defineProps({ appointment: String, consultation: Object, record: String, round: Boolean })
 const emit = defineEmits(["saved"])
 
 const opts = createResource({ url: "hospital_saas.api.opd.get_consultation_options", cache: "hms-consultation-options" })
@@ -129,9 +135,9 @@ function toggleLab(code) {
 }
 
 const save = createResource({
-	url: "hospital_saas.api.opd.save_consultation",
+	url: props.round ? "hospital_saas.api.ipd.save_round" : "hospital_saas.api.opd.save_consultation",
 	onSuccess() {
-		toast.success(finishing.value ? "Consultation completed" : "Draft saved")
+		toast.success(props.round ? "Ward round saved" : finishing.value ? "Consultation completed" : "Draft saved")
 		show.value = false
 		emit("saved")
 	},
@@ -139,7 +145,8 @@ const save = createResource({
 
 function submit(complete) {
 	finishing.value = !!complete
-	save.submit({ appointment: props.appointment, data: { ...form }, submit: complete })
+	if (props.round) save.submit({ record: props.record, data: { ...form } })
+	else save.submit({ appointment: props.appointment, data: { ...form }, submit: complete })
 }
 </script>
 

@@ -243,8 +243,20 @@ walkthrough update. Estimates assume one developer with AI assistance.
   badge (sidebar, tabs, placeholders), e.g. ICD-10 codes, clinical findings,
   visit Operations and Live Consultation tabs
 - [ ] ICD-10 codes and findings masters (shown as Soon), radiology orders
-- IPD patient page (nurse notes, medication chart, bed transfer, IPD charges,
-  discharge summary), visual bed board
+- [x] IPD list (admitted / discharged), IPD stay page with Smart Hospital's
+  tabs: overview, nurse notes, medication, consultant register (ward rounds),
+  lab investigation, charges (running bill: bed days + doctor visits),
+  payments (advances), bed history, timeline, vitals; Operations and Live
+  Consultation tabs marked Soon
+- [x] Admit (from IPD list or an OPD visit, with advance deposit), ward round,
+  nurse note, vitals, bed transfer, discharge with final bill (advances
+  applied automatically, balance collected)
+- [x] Bed status board (`/hms/beds`, also on the topbar): every ward and bed,
+  who is in it and for how many days
+- [x] Demo data: daily rounds, vitals and nurse notes for every admission,
+  advance deposits, three discharged stays
+- [ ] Printable discharge summary (Soon), pharmacy/pathology/radiology lines
+  on the IPD bill (Soon), gender-appropriate ward allocation in demo data
 - Radiology module (orders, report templates, images)
 - Operation Theatre (booking, team, notes)
 - Central billing dashboard across OPD, IPD, lab, radiology, pharmacy
