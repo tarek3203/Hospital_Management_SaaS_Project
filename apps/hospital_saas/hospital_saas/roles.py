@@ -82,6 +82,7 @@ EXTRA_PERMISSIONS = {
 	**{dt: {r: PATIENT_READ for r in ["Physician", "Pharmacist", "Pathologist", "Accountant", "Receptionist"]} for dt in ("Blood Bag",)},
 	**{dt: {r: PATIENT_READ for r in ["Physician", "Pharmacist", "Pathologist", "Accountant"]} for dt in ("Blood Donor", "Blood Issue")},
 	**{dt: {r: PATIENT_READ for r in ["Physician", "Accountant"]} for dt in ("Ambulance Call", "Ambulance Vehicle", "TPA Organisation")},
+	"Live Meeting": {r: PATIENT_READ for r in ["Accounts User", "Laboratory User", "Stock User"]},
 	"Sales Invoice": {r: PATIENT_READ for r in ["Physician", "Pathologist", "Radiologist"]},
 	"Vital Signs": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},
 	"Inpatient Record": {r: PATIENT_READ for r in ["Pharmacist", "Pathologist", "Radiologist", "Accountant"]},

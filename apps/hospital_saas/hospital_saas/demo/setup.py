@@ -51,6 +51,7 @@ def run():
 		setup_registers,
 		setup_hr_extras,
 		setup_finance_entries,
+		setup_communication,
 		apply_branding,
 		set_anchor,
 	]
@@ -1451,3 +1452,75 @@ def setup_finance_entries():
 		frappe.get_doc(
 			{"doctype": "Hospital Income", "income_head": head, "received_from": payer, "income_date": add_days(nowdate(), -rng.randint(1, 28)), "amount": amount, "mode_of_payment": "bKash" if amount < 50000 else "Card"}
 		).insert(ignore_permissions=True)
+
+
+def setup_communication():
+	"""Notices, shared documents, live consultations and surveys with responses."""
+	if frappe.db.count("Hospital Notice"):
+		return
+	for title, audience, channel, msg, days_ago in [
+		("Dengue preparedness", "All staff", "Notice board", "Dengue cases are rising. Keep NS1 kits stocked and report every positive case to the duty manager.", 1),
+		("Fire drill on Thursday", "All staff", "Notice board", "A fire drill will be held at 11:00 on Thursday. Please follow the floor wardens.", 2),
+		("New ICU duty roster", "Nurses", "Notice board", "The ICU roster for next month is on the duty roster page. Swap requests to the nursing supervisor.", 3),
+		("Cardiology CME session", "Doctors", "Notice board", "CME on heart failure management, Saturday 6 pm, conference room level 6.", 4),
+		("Lab report turnaround", "Laboratory", "Notice board", "Routine reports must be approved within 6 hours of sample collection.", 5),
+		("Free diabetes camp", "Patients", "SMS", "CityCare free diabetes check-up camp this Friday 9am-1pm at Dhanmondi branch.", 6),
+		("Month-end closing", "Accounts", "Email", "Please close all pending bills before the 30th.", 8),
+	]:
+		frappe.get_doc(
+			{"doctype": "Hospital Notice", "title": title, "audience": audience, "channel": channel, "message": msg, "publish_date": add_days(nowdate(), -days_ago)}
+		).insert(ignore_permissions=True)
+
+	for title, ctype, audience, url in [
+		("Hand hygiene guidelines (WHO)", "Policy", "All staff", "https://www.who.int/publications/i/item/9789241597906"),
+		("Dengue clinical management guideline", "Training material", "Doctors", "https://www.who.int/publications/i/item/9789241547871"),
+		("Patient admission consent form", "Form", "Reception", "https://citycare.test/forms/admission-consent"),
+		("Infection prevention and control circular", "Circular", "Nurses", "https://citycare.test/circulars/ipc-2026"),
+		("Monthly quality report - September", "Report", "All staff", "https://citycare.test/reports/quality-2026-09"),
+	]:
+		frappe.get_doc(
+			{"doctype": "Shared Content", "title": title, "content_type": ctype, "audience": audience, "url": url, "upload_date": add_days(nowdate(), -rng.randint(1, 30))}
+		).insert(ignore_permissions=True)
+
+	patients = frappe.get_all("Patient", pluck="name")
+	docs = practitioners()
+	for i in range(8):
+		frappe.get_doc(
+			{
+				"doctype": "Live Meeting",
+				"title": "Follow-up video consultation",
+				"meeting_type": "Consultation",
+				"patient": rng.choice(patients),
+				"doctor": rng.choice(docs).name,
+				"meeting_date": add_days(nowdate(), rng.randint(-10, 3)) if i else getdate(),
+				"meeting_time": time(rng.choice([16, 17, 18, 19, 20]), rng.choice([0, 30])),
+				"duration": 20,
+				"status": "Scheduled",
+			}
+		).insert(ignore_permissions=True)
+	for title, day in [("Weekly department heads meeting", 2), ("Quality committee review", 5)]:
+		frappe.get_doc(
+			{"doctype": "Live Meeting", "title": title, "meeting_type": "Meeting", "meeting_date": add_days(nowdate(), day), "meeting_time": time(15, 0), "duration": 60, "status": "Scheduled"}
+		).insert(ignore_permissions=True)
+	frappe.db.sql("""update `tabLive Meeting` set status = 'Completed' where meeting_date < %s""", nowdate())
+
+	surveys = [
+		("Patient satisfaction survey", "Patients", "How easy was it to book your appointment?\nHow long did you wait to see the doctor?\nHow well did the doctor explain your treatment?\nHow clean was the hospital?\nHow likely are you to recommend CityCare?"),
+		("Staff canteen feedback", "Staff", "Food quality\nVariety of menu\nPrice\nCleanliness"),
+	]
+	for title, audience, questions in surveys:
+		form = frappe.get_doc({"doctype": "Survey Form", "title": title, "audience": audience, "questions": questions, "is_active": 1}).insert(ignore_permissions=True)
+		n = len(questions.split("\n"))
+		for _ in range(rng.randint(12, 25)):
+			answers = [rng.choices([2, 3, 4, 5], [5, 15, 45, 35])[0] for _ in range(n)]
+			frappe.get_doc(
+				{
+					"doctype": "Survey Response",
+					"survey": form.name,
+					"respondent": f"{rng.choice(D.MALE_FIRST + D.FEMALE_FIRST)} {rng.choice(D.LAST_NAMES)}",
+					"answers": frappe.as_json(answers),
+					"average_rating": round(sum(answers) / n, 2),
+					"comment": rng.choice([None, None, "Doctors were very caring.", "Waiting area was crowded.", "Billing took too long.", "Very clean and well managed."]),
+					"response_date": add_days(nowdate(), -rng.randint(0, 30)),
+				}
+			).insert(ignore_permissions=True)

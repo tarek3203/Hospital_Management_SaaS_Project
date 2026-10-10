@@ -1,0 +1,171 @@
+{
+ "doctype": "DocType",
+ "name": "Live Meeting",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "format:LIVE-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "title_field": "title",
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "owner": "Administrator",
+ "creation": "2026-10-10 07:00:00.000000",
+ "modified": "2026-10-10 07:00:00.000000",
+ "field_order": [
+  "title",
+  "meeting_type",
+  "patient",
+  "patient_name",
+  "doctor",
+  "doctor_name",
+  "meeting_date",
+  "meeting_time",
+  "duration",
+  "platform",
+  "join_url",
+  "status",
+  "agenda"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "meeting_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Consultation\nMeeting",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "patient",
+   "fieldtype": "Link",
+   "label": "Patient",
+   "options": "Patient"
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient name",
+   "fetch_from": "patient.patient_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doctor",
+   "fieldtype": "Link",
+   "label": "Doctor",
+   "options": "Healthcare Practitioner"
+  },
+  {
+   "fieldname": "doctor_name",
+   "fieldtype": "Data",
+   "label": "Doctor name",
+   "fetch_from": "doctor.practitioner_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "meeting_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1,
+   "in_list_view": 1,
+   "default": "Today"
+  },
+  {
+   "fieldname": "meeting_time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Int",
+   "label": "Duration (min)",
+   "default": "30"
+  },
+  {
+   "fieldname": "platform",
+   "fieldtype": "Select",
+   "label": "Platform",
+   "options": "Jitsi Meet\nZoom\nGoogle Meet",
+   "default": "Jitsi Meet"
+  },
+  {
+   "fieldname": "join_url",
+   "fieldtype": "Data",
+   "label": "Join link",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Scheduled\nCompleted\nCancelled",
+   "default": "Scheduled",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "agenda",
+   "fieldtype": "Small Text",
+   "label": "Agenda / notes"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Physician",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Nursing User",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Receptionist",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  }
+ ]
+}

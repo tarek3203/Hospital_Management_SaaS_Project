@@ -44,6 +44,7 @@ const routes = [
 	{ path: "/annual-calendar", name: "AnnualCalendar", component: () => import("./pages/AnnualCalendar.vue") },
 	{ path: "/branches", name: "Branches", component: () => import("./pages/Branches.vue") },
 	{ path: "/branches/report", name: "BranchReport", component: () => import("./pages/Branches.vue") },
+	{ path: "/survey/:name", name: "Survey", component: () => import("./pages/Survey.vue"), props: true },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

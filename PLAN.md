@@ -326,10 +326,17 @@ walkthrough update. Estimates assume one developer with AI assistance.
   check-ins, a month of expenses and other income
 
 ### Phase 6: Communication and content (2.5 weeks)
-- SMS gateway (BD provider), email, in-app notifications
-- Download Center, Survey Forms
-- Live Consultation and Live Meeting with Zoom (as in the demo) and Jitsi as a free option
-- Staff chat (1:1 and group), calendar with events and to-dos
+- [x] Messaging (`/hms/r/notices`): notices by audience and channel; notice
+  board on every dashboard; SMS and email are recorded as "Queued for
+  gateway" until a Bangladesh SMS provider is connected (Soon)
+- [x] Download Center: shared documents by type and audience, file upload or
+  link
+- [x] Live Consultation and Live Meeting: Jitsi Meet rooms generated
+  automatically with a Join button; Zoom and Google Meet listed, API
+  integration Soon
+- [x] Survey Forms: questions rated 1 to 5, fill-in and results pages;
+  sending to patients by SMS link Soon
+- [ ] Staff chat and calendar (topbar, marked Soon)
 
 ### Phase 7: Patient portal and public website (2 weeks)
 - Patient portal pages to match Smart Hospital's 11 patient menus, online

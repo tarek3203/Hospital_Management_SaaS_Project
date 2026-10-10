@@ -29,10 +29,16 @@
 		</div>
 
 		<DataTable v-if="reg.data" :columns="columns" :rows="reg.data.rows" clickable empty-text="Nothing recorded yet" @row-click="open">
-			<template v-if="reg.data.certificate" #actions="{ row }">
-				<Button size="sm" variant="ghost" title="Certificate" @click="$router.push(`/r/${registerKey}/${encodeURIComponent(row.name)}/certificate`)">
-					<FeatherIcon name="award" class="h-4 w-4" />
-				</Button>
+			<template v-if="reg.data.certificate || reg.data.links.length || reg.data.survey" #actions="{ row }">
+				<div class="flex justify-end gap-1">
+					<Button v-if="reg.data.certificate" size="sm" variant="ghost" title="Certificate" @click="$router.push(`/r/${registerKey}/${encodeURIComponent(row.name)}/certificate`)">
+						<FeatherIcon name="award" class="h-4 w-4" />
+					</Button>
+					<template v-for="l in reg.data.links" :key="l.field">
+						<Button v-if="row[l.field]" size="sm" @click="openLink(row[l.field])">{{ l.label }}</Button>
+					</template>
+					<Button v-if="reg.data.survey" size="sm" @click="$router.push(`/survey/${encodeURIComponent(row.name)}`)">Open</Button>
+				</div>
 			</template>
 		</DataTable>
 		<div v-else-if="reg.loading" class="py-20 text-center"><LoadingIndicator class="mx-auto h-6 w-6" /></div>
@@ -72,6 +78,10 @@ const columns = computed(() => [
 		return { key: fn, label: f.label, badge: BADGE_FIELDS.includes(fn), format: f.fieldtype === "Currency" ? "currency" : undefined }
 	}),
 ])
+// Only web links and uploaded files: a stored "javascript:" URL must never run.
+function openLink(url) {
+	if (/^(https?:\/\/|\/(private\/)?files\/)/i.test(url)) window.open(url, "_blank", "noopener")
+}
 function open(row) {
 	current.value = row ? { ...row } : null
 	show.value = true

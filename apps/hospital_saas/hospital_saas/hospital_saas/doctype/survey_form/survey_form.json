@@ -1,0 +1,135 @@
+{
+ "doctype": "DocType",
+ "name": "Survey Form",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "format:SRV-{#####}",
+ "naming_rule": "Expression",
+ "title_field": "title",
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "owner": "Administrator",
+ "creation": "2026-10-10 07:00:00.000000",
+ "modified": "2026-10-10 07:00:00.000000",
+ "field_order": [
+  "title",
+  "audience",
+  "questions",
+  "is_active",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Select",
+   "label": "For",
+   "options": "Patients\nStaff",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "questions",
+   "fieldtype": "Small Text",
+   "label": "Questions (one per line, each rated 1 to 5)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Introduction"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Physician",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Nursing User",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Receptionist",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Laboratory User",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Stock User",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  }
+ ]
+}

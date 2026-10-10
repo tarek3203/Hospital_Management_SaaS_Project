@@ -1,0 +1,140 @@
+{
+ "doctype": "DocType",
+ "name": "Survey Response",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "hash",
+ "naming_rule": "Random",
+ "title_field": "survey",
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "owner": "Administrator",
+ "creation": "2026-10-10 07:00:00.000000",
+ "modified": "2026-10-10 07:00:00.000000",
+ "field_order": [
+  "survey",
+  "respondent",
+  "answers",
+  "average_rating",
+  "comment",
+  "response_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "survey",
+   "fieldtype": "Link",
+   "label": "Survey",
+   "options": "Survey Form",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "respondent",
+   "fieldtype": "Data",
+   "label": "Respondent",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Long Text",
+   "label": "Answers (JSON)"
+  },
+  {
+   "fieldname": "average_rating",
+   "fieldtype": "Float",
+   "label": "Average rating",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "comment",
+   "fieldtype": "Small Text",
+   "label": "Comment"
+  },
+  {
+   "fieldname": "response_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "default": "Today",
+   "in_list_view": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Physician",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Nursing User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Receptionist",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Laboratory User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Stock User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  }
+ ]
+}

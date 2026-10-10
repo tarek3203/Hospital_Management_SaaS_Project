@@ -20,6 +20,17 @@
 						class="sm:col-span-2"
 						:disabled="!!f.read_only"
 					/>
+					<div v-else-if="f.fieldtype === 'Attach'">
+						<p class="mb-1.5 text-xs text-gray-600">{{ f.label }}</p>
+						<div class="flex items-center gap-2">
+							<FileUploader :upload-args="{ private: false }" @success="(file) => (form[f.fieldname] = file.file_url)">
+								<template #default="{ openFileSelector, uploading, progress }">
+									<Button size="sm" :loading="uploading" @click="openFileSelector()">{{ uploading ? `${progress}%` : "Upload file" }}</Button>
+								</template>
+							</FileUploader>
+							<a v-if="form[f.fieldname]" :href="form[f.fieldname]" target="_blank" rel="noopener" class="truncate text-sm text-brand-600 hover:underline">{{ form[f.fieldname].split("/").pop() }}</a>
+						</div>
+					</div>
 					<FormControl v-else-if="f.fieldtype === 'Check'" v-model="form[f.fieldname]" type="checkbox" :label="f.label" />
 					<FormControl
 						v-else
@@ -43,7 +54,7 @@
 
 <script setup>
 import { computed, reactive, watch } from "vue"
-import { Button, createResource, Dialog, ErrorMessage, FormControl, toast } from "frappe-ui"
+import { Button, createResource, Dialog, ErrorMessage, FileUploader, FormControl, toast } from "frappe-ui"
 import LinkInput from "@/components/LinkInput.vue"
 import { todayISO } from "@/utils"
 

@@ -41,7 +41,34 @@ def get_dashboard():
 	}.get(job)
 	if not builder:
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
-	return builder()
+	result = builder()
+	result["notices"] = notice_board(job)
+	return result
+
+
+AUDIENCE_FOR_JOB = {
+	"Doctor": "Doctors",
+	"Nurse": "Nurses",
+	"Receptionist": "Reception",
+	"Pathologist": "Laboratory",
+	"Radiologist": "Laboratory",
+	"Pharmacist": "Pharmacy",
+	"Accountant": "Accounts",
+}
+
+
+def notice_board(job):
+	audiences = ["All staff", AUDIENCE_FOR_JOB.get(job)]
+	if job in ("Super Admin", "Admin"):
+		audiences = list(AUDIENCE_FOR_JOB.values()) + ["All staff"]
+	return frappe.get_list(
+		"Hospital Notice",
+		filters={"channel": "Notice board", "audience": ["in", [a for a in audiences if a]], "publish_date": ["<=", nowdate()]},
+		or_filters=[["expiry_date", ">=", nowdate()], ["expiry_date", "is", "not set"]],
+		fields=["name", "title", "message", "publish_date", "audience"],
+		order_by="publish_date desc",
+		limit=5,
+	)
 
 
 # ---------------------------------------------------------------- building blocks

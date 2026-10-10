@@ -23,6 +23,10 @@ REGISTERS = {
 	"blood-issues": {"doctype": "Blood Issue", "title": "Blood Issue", "module": "Blood Bank"},
 	"income": {"doctype": "Hospital Income", "title": "Income", "module": "Finance", "stat": "income_head"},
 	"expenses": {"doctype": "Hospital Expense", "title": "Expenses", "module": "Finance", "stat": "expense_head"},
+	"notices": {"doctype": "Hospital Notice", "title": "Messaging", "module": "Messaging", "stat": "channel"},
+	"downloads": {"doctype": "Shared Content", "title": "Download Center", "module": "Download Center", "stat": "content_type", "links": [{"label": "Open", "field": "file"}, {"label": "Open link", "field": "url"}]},
+	"live-meetings": {"doctype": "Live Meeting", "title": "Live Consultation and Meetings", "module": "Live Consultation", "stat": "meeting_type", "links": [{"label": "Join", "field": "join_url"}]},
+	"surveys": {"doctype": "Survey Form", "title": "Survey Forms", "module": "Survey Forms", "stat": "audience", "survey": True},
 	"tpa": {"doctype": "TPA Organisation", "title": "TPA Management", "module": "TPA Management"},
 	"referral-persons": {"doctype": "Referral Person", "title": "Referral Persons", "module": "Referral", "stat": "category"},
 	"referral-payments": {"doctype": "Referral Payment", "title": "Referral Payments", "module": "Referral", "stat": "status"},
@@ -98,6 +102,8 @@ def get_register(key: str, search: str | None = None, start: int = 0, page_lengt
 		"total": frappe.db.count(doctype),
 		"stats": {"field": config.get("stat"), "label": config.get("stat_label"), "rows": stats},
 		"certificate": bool(config.get("certificate")),
+		"links": config.get("links") or [],
+		"survey": bool(config.get("survey")),
 		"can": {
 			"create": bool(frappe.has_permission(doctype, "create")),
 			"write": bool(frappe.has_permission(doctype, "write")),
@@ -149,3 +155,49 @@ def search_link(doctype: str, txt: str = ""):
 		page_length=15,
 	)
 	return [{"value": r.name, "label": r.get("title") or r.name, "description": r.name if r.get("title") else None} for r in rows]
+
+
+# ---------------------------------------------------------------- surveys
+
+
+@frappe.whitelist()
+def get_survey(name: str):
+	survey = frappe.get_doc("Survey Form", name)
+	survey.check_permission("read")
+	questions = [q.strip() for q in (survey.questions or "").splitlines() if q.strip()]
+	responses = frappe.get_all("Survey Response", filters={"survey": name}, fields=["answers", "average_rating", "respondent", "comment", "response_date"], order_by="creation desc")
+	totals = [0.0] * len(questions)
+	for r in responses:
+		answers = frappe.parse_json(r.answers or "[]")
+		for i, value in enumerate(answers[: len(questions)]):
+			totals[i] += float(value or 0)
+	count = len(responses)
+	return {
+		"name": survey.name,
+		"title": survey.title,
+		"audience": survey.audience,
+		"description": survey.description,
+		"questions": [{"text": q, "average": round(totals[i] / count, 2) if count else None} for i, q in enumerate(questions)],
+		"responses": count,
+		"average": round(sum(r.average_rating or 0 for r in responses) / count, 2) if count else None,
+		"comments": [r for r in responses if r.comment][:10],
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def submit_survey(name: str, answers: list | str, respondent: str | None = None, comment: str | None = None):
+	answers = [max(1, min(5, int(a))) for a in frappe.parse_json(answers)]
+	survey = frappe.get_doc("Survey Form", name)
+	survey.check_permission("read")
+	doc = frappe.get_doc(
+		{
+			"doctype": "Survey Response",
+			"survey": name,
+			"respondent": respondent or frappe.db.get_value("User", frappe.session.user, "full_name"),
+			"answers": frappe.as_json(answers),
+			"average_rating": round(sum(answers) / len(answers), 2) if answers else 0,
+			"comment": comment,
+		}
+	)
+	doc.insert()
+	return doc.name
