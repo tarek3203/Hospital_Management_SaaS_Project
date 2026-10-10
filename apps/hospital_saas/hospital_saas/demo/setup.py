@@ -53,6 +53,7 @@ def run():
 		setup_finance_entries,
 		setup_communication,
 		enrich_demo_patient,
+		setup_website_content,
 		apply_branding,
 		set_anchor,
 	]
@@ -1578,3 +1579,56 @@ def enrich_demo_patient():
 			"appointment_time": time(18, 15), "duration": 15, "company": D.COMPANY,
 		}
 	).insert(ignore_permissions=True)
+
+
+def setup_website_content():
+	"""Front CMS content for the public website and a few enquiries from it."""
+	if frappe.db.count("FAQ Entry"):
+		return
+
+	def ins(doctype, **values):
+		frappe.get_doc({"doctype": doctype, **values}).insert(ignore_permissions=True)
+
+	for title, days, venue, summary in [
+		("Free diabetes screening camp", 4, "Dhanmondi branch, ground floor", "Free blood sugar and HbA1c screening with diet counselling by our diabetologists."),
+		("World Heart Day walk", -11, "Dhanmondi Lake", "Over 300 people joined our cardiologists for a 3 km walk and free BP checks."),
+		("Dengue awareness session", -20, "Uttara community centre", "How to recognise warning signs of dengue and when to come to hospital."),
+		("Basic life support training", 12, "Conference room, level 6", "Hands-on CPR training for the public, certified by our emergency team."),
+	]:
+		ins("Hospital Event", title=title, event_date=add_days(nowdate(), days), venue=venue, summary=summary, published=1)
+	for caption, category in [
+		("Main reception, Dhanmondi", "Facilities"), ("Intensive care unit", "Facilities"), ("Private cabin", "Facilities"),
+		("Operation theatre complex", "Facilities"), ("Nursing team", "Team"), ("Free health camp, Savar", "Community"),
+	]:
+		ins("Gallery Photo", caption=caption, category=category, image="/assets/hospital_saas/images/logo.svg", published=1)
+	for i, (q, a) in enumerate(
+		[
+			("What are the visiting hours?", "Wards and cabins: 4pm to 7pm every day. ICU: one visitor at a time, 5pm to 6pm."),
+			("How do I book an appointment?", "Call the hotline, use the appointment request form on this website or book a time in the patient portal."),
+			("Do I pay the doctor's fee in advance?", "The consultation fee is paid at the front desk before the visit, by cash, bKash, Nagad or card."),
+			("How do I collect my lab report?", "Reports are available in the patient portal once approved, or at the lab counter with your receipt."),
+			("Do you accept insurance?", "Yes. We work with several TPAs and corporate health plans. Bring your card to the front desk."),
+			("Is there an emergency service?", "Our emergency department and ambulance service are open 24 hours, every day."),
+			("Can I get a copy of my prescription?", "Yes. Ask at the front desk or download it from the patient portal."),
+			("Is parking available?", "Limited parking is available at the Dhanmondi branch. Uttara has a public car park next door."),
+		]
+	):
+		ins("FAQ Entry", question=q, answer=a, sort_order=i + 1, published=1)
+	for name, role, rating, text in [
+		("Nasrin Akter", "Mother of a patient", 5, "The paediatric team treated my son like their own. Thank you, CityCare."),
+		("Abdul Karim", "Cardiology patient", 5, "My angiogram and follow-up were well organised and the doctors explained everything."),
+		("Farzana Haque", "Maternity patient", 4, "Caring nurses and a very clean cabin. Billing took a little long."),
+		("Rashed Khan", "Orthopaedic patient", 5, "Walking again three weeks after my knee surgery. Excellent physiotherapy team."),
+		("Sumaiya Rahman", "Outpatient", 4, "Easy booking and short waiting time in the evening chamber."),
+	]:
+		ins("Patient Testimonial", patient_name=name, designation=role, rating=rating, testimonial=text, published=1)
+	for i in range(6):
+		ins(
+			"Website Enquiry",
+			enquiry_type=rng.choice(["Appointment request", "Appointment request", "General enquiry"]),
+			full_name=f"{rng.choice(D.MALE_FIRST + D.FEMALE_FIRST)} {rng.choice(D.LAST_NAMES)}",
+			phone=random_phone(),
+			preferred_date=add_days(nowdate(), rng.randint(0, 5)),
+			message=rng.choice(["Need a gynae appointment this week.", "Is the cardiology chamber open on Friday?", None, "Want a health check-up package."]),
+			status=rng.choice(["New", "New", "Contacted", "Booked"]),
+		)

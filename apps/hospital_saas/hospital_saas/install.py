@@ -20,5 +20,7 @@ def apply_branding():
 		{"app_name": APP_NAME, "app_logo": LOGO, "favicon": LOGO, "splash_image": LOGO},
 	)
 	frappe.db.set_single_value("Navbar Settings", "app_logo", LOGO)
+	# The public website (www/home.html) is the landing page for visitors.
+	frappe.db.set_single_value("Website Settings", "home_page", "home")
 	frappe.db.set_single_value("System Settings", "app_name", APP_NAME)
 	frappe.clear_cache()

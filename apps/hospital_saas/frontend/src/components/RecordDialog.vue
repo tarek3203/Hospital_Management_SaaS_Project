@@ -20,7 +20,7 @@
 						class="sm:col-span-2"
 						:disabled="!!f.read_only"
 					/>
-					<div v-else-if="f.fieldtype === 'Attach'">
+					<div v-else-if="['Attach', 'Attach Image'].includes(f.fieldtype)">
 						<p class="mb-1.5 text-xs text-gray-600">{{ f.label }}</p>
 						<div class="flex items-center gap-2">
 							<FileUploader :upload-args="{ private: false }" @success="(file) => (form[f.fieldname] = file.file_url)">

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{{ title }} · {{ hospital.company }}</title>
+	<link rel="icon" href="{{ hospital.logo }}" />
+	<link rel="stylesheet" href="/assets/hospital_saas/css/site.css" />
+</head>
+<body>
+{% autoescape true %}
+	<header class="site-header">
+		<div class="wrap header-row">
+			<a href="/home" class="brand"><img src="{{ hospital.logo }}" alt="" /><span>{{ hospital.company }}</span></a>
+			<nav class="nav">
+				{% for label, href in nav %}<a href="{{ href }}" class="{{ 'active' if path == href else '' }}">{{ label }}</a>{% endfor %}
+			</nav>
+			<div class="header-actions">
+				<a href="/login" class="btn btn-ghost">Login</a>
+				<a href="/appointment" class="btn btn-primary">Book appointment</a>
+			</div>
+		</div>
+	</header>
+	<main>{% block content %}{% endblock %}</main>
+	<footer class="site-footer">
+		<div class="wrap footer-grid">
+			<div>
+				<p class="footer-brand">{{ hospital.company }}</p>
+				<p>{{ hospital.address }}</p>
+				<p>{{ hospital.phone }} · {{ hospital.email }}</p>
+			</div>
+			<div>
+				<p class="footer-title">Hospital</p>
+				<a href="/about">About us</a><a href="/departments">Departments</a><a href="/doctors">Our doctors</a><a href="/holidays">Annual calendar</a>
+			</div>
+			<div>
+				<p class="footer-title">Patients</p>
+				<a href="/appointment">Book appointment</a><a href="/login">Patient login</a><a href="/faq">FAQ</a><a href="/contact">Contact</a>
+			</div>
+			<div>
+				<p class="footer-title">Emergency</p>
+				<p class="emergency">{{ hospital.phone }}</p>
+				<p>24 hours, 7 days a week</p>
+			</div>
+		</div>
+		<p class="wrap copyright">© {{ year }} {{ hospital.company }}. Demo website of {{ hospital.name }}.</p>
+	</footer>
+	{% block scripts %}{% endblock %}
+{% endautoescape %}
+</body>
+</html>

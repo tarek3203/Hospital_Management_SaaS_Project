@@ -1,0 +1,77 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<section class="hero">
+	<div class="wrap hero-grid">
+		<div>
+			<span class="tag" style="background:rgba(255,255,255,.15);color:#fff">Trusted care in Dhaka since 2009</span>
+			<h1>Specialist care for your whole family, close to home</h1>
+			<p>{{ stats["Specialist doctors"] }} consultants across {{ departments|length }}+ departments, a 24 hour emergency and modern diagnostics at our Dhanmondi and Uttara branches.</p>
+			<div style="display:flex;gap:10px;flex-wrap:wrap">
+				<a href="/appointment" class="btn btn-light">Book an appointment</a>
+				<a href="/doctors" class="btn" style="border-color:rgba(255,255,255,.4);color:#fff">Find a doctor</a>
+			</div>
+		</div>
+		<div class="hero-card">
+			<h3>Opening hours</h3>
+			<ul style="padding-left:18px;margin:0">
+				<li>Emergency: 24 hours, every day</li>
+				<li>OPD chambers: Saturday to Thursday, 10am to 9pm</li>
+				<li>Laboratory: 7am to 10pm</li>
+				<li>Pharmacy: 24 hours</li>
+			</ul>
+			<p style="margin:14px 0 0;font-size:14px">Hotline <b>{{ hospital.phone }}</b></p>
+		</div>
+	</div>
+</section>
+<div class="wrap stats">
+	{% for label, value in stats.items() %}<div class="stat"><b>{{ "{:,}".format(value) }}</b><span>{{ label }}</span></div>{% endfor %}
+</div>
+<section class="block">
+	<div class="wrap">
+		<h2 class="section-title">Departments</h2>
+		<p class="section-sub">Specialist teams for every stage of life</p>
+		<div class="grid g4">
+			{% for d in departments %}<a class="card" href="/departments#{{ d.name|lower|replace(' ', '-') }}"><h3>{{ d.name }}</h3><p>{{ d.doctors }} specialist{{ 's' if d.doctors > 1 else '' }}</p></a>{% endfor %}
+		</div>
+	</div>
+</section>
+<section class="block alt">
+	<div class="wrap">
+		<h2 class="section-title">Meet our doctors</h2>
+		<p class="section-sub">Experienced consultants, available in the evening chambers too</p>
+		<div class="grid g4">
+			{% for d in doctors %}<div class="card"><div class="avatar">{{ d.initials }}</div><h3>Dr. {{ d.practitioner_name }}</h3><p>{{ d.designation }}, {{ d.department }}</p><p>{{ d.branch }}</p></div>{% endfor %}
+		</div>
+		<p style="margin-top:18px"><a href="/doctors" class="btn btn-ghost">All doctors</a></p>
+	</div>
+</section>
+{% if testimonials %}
+<section class="block">
+	<div class="wrap">
+		<h2 class="section-title">What our patients say</h2>
+		<p class="section-sub">Feedback from people we cared for</p>
+		<div class="grid g3">
+			{% for t in testimonials %}<div class="card"><p class="stars">{{ "★" * t.rating }}</p><p class="quote">"{{ t.testimonial }}"</p><p style="margin-top:10px"><b>{{ t.patient_name }}</b>{% if t.designation %}, {{ t.designation }}{% endif %}</p></div>{% endfor %}
+		</div>
+	</div>
+</section>
+{% endif %}
+{% if events %}
+<section class="block alt">
+	<div class="wrap">
+		<h2 class="section-title">Events and health camps</h2>
+		<div class="grid g3">
+			{% for e in events %}<div class="card"><span class="tag">{{ frappe.format(e.event_date, {"fieldtype": "Date"}) }}</span><h3 style="margin-top:8px">{{ e.title }}</h3><p>{{ e.venue }}</p><p style="margin-top:6px">{{ e.summary }}</p></div>{% endfor %}
+		</div>
+	</div>
+</section>
+{% endif %}
+<section class="block">
+	<div class="wrap cta">
+		<div><h2 style="margin:0">Need to see a doctor?</h2><p style="margin:4px 0 0;opacity:.85">Send a request and our front desk will call you to confirm a time.</p></div>
+		<a href="/appointment" class="btn btn-light">Request an appointment</a>
+	</div>
+</section>
+{% endautoescape %}
+{% endblock %}

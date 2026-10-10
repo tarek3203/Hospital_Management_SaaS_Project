@@ -1,0 +1,16 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>Departments</h1><p>Specialists and their chambers by department</p></div></div>
+<section class="block"><div class="wrap">
+	{% for d in departments %}
+	<div id="{{ d.name|lower|replace(' ', '-') }}" style="margin-bottom:28px">
+		<h2 class="section-title" style="font-size:22px">{{ d.name }}</h2>
+		<div class="grid g4" style="margin-top:12px">
+			{% for doc in doctors if doc.department == d.name %}<div class="card"><div class="avatar">{{ doc.initials }}</div><h3>Dr. {{ doc.practitioner_name }}</h3><p>{{ doc.designation }} · {{ doc.branch }}</p></div>{% endfor %}
+		</div>
+	</div>
+	{% endfor %}
+</div></section>
+{% endautoescape %}
+{% endblock %}

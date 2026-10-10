@@ -1,0 +1,25 @@
+<script>
+	document.getElementById("enquiry").addEventListener("submit", async (event) => {
+		event.preventDefault()
+		const form = event.target
+		const notice = document.getElementById("notice")
+		const button = form.querySelector("button")
+		button.disabled = true
+		try {
+			const response = await fetch("/api/method/hospital_saas.website.submit_enquiry", {
+				method: "POST",
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+				body: new URLSearchParams(new FormData(form)),
+			})
+			if (!response.ok) throw new Error((await response.json())._server_messages || "")
+			form.reset()
+			notice.className = "notice"
+			notice.textContent = "Thank you. Our front desk will call you shortly."
+		} catch (e) {
+			notice.className = "notice error"
+			notice.textContent = "Sorry, we could not send your request. Please call the hotline."
+		}
+		notice.style.display = "block"
+		button.disabled = false
+	})
+</script>

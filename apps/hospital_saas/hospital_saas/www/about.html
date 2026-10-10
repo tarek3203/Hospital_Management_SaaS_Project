@@ -1,0 +1,28 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>About {{ hospital.company }}</h1><p>A multi-specialty hospital serving Dhaka with compassion and modern medicine</p></div></div>
+<section class="block"><div class="wrap grid g2">
+	<div>
+		<h2 class="section-title">Our story</h2>
+		<p>{{ hospital.company }} began as a small diagnostic centre in Dhanmondi and has grown into a {{ stats["Beds"] }} bed hospital with {{ stats["Branches"] }} branches. Our {{ stats["Specialist doctors"] }} consultants and nursing teams look after more than {{ "{:,}".format(stats["Patients served"]) }} registered patients.</p>
+		<h2 class="section-title" style="margin-top:28px">Vision and mission</h2>
+		<p><b>Vision:</b> affordable, world-class care for every family in Bangladesh.</p>
+		<p><b>Mission:</b> treat every patient with dignity, keep our prices transparent and invest in our people and technology.</p>
+	</div>
+	<div class="card">
+		<h3>Facilities</h3>
+		<ul style="color:var(--muted);padding-left:18px">
+			<li>24 hour emergency and ambulance service</li>
+			<li>ICU with central monitoring</li>
+			<li>Private cabins and general wards</li>
+			<li>Pathology and radiology (X-ray, USG, CT)</li>
+			<li>Operation theatres and day surgery</li>
+			<li>24 hour pharmacy and blood bank</li>
+		</ul>
+		<h3 style="margin-top:16px">Departments</h3>
+		<p>{{ departments|map(attribute="name")|join(", ") }}</p>
+	</div>
+</div></section>
+{% endautoescape %}
+{% endblock %}

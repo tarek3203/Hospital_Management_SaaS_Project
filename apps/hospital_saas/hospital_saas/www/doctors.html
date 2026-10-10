@@ -1,0 +1,17 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>Our doctors</h1><p>Consultation fees are paid at the hospital counter</p></div></div>
+<section class="block"><div class="wrap grid g4">
+	{% for d in doctors %}
+	<div class="card">
+		<div class="avatar">{{ d.initials }}</div>
+		<h3>Dr. {{ d.practitioner_name }}</h3>
+		<p>{{ d.designation }}, {{ d.department }}</p>
+		<p>{{ d.branch }} · Fee Tk {{ "{:,.0f}".format(d.op_consulting_charge or 0) }}</p>
+		<p style="margin-top:10px"><a class="btn btn-ghost" href="/appointment?doctor={{ d.name }}">Book</a></p>
+	</div>
+	{% endfor %}
+</div></section>
+{% endautoescape %}
+{% endblock %}

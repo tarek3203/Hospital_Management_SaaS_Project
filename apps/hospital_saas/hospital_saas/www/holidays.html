@@ -1,0 +1,9 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>Annual calendar</h1><p>Public holidays. Emergency, pharmacy and inpatient care stay open on every holiday.</p></div></div>
+<section class="block"><div class="wrap grid g3">
+	{% for h in holidays %}<div class="card"><span class="tag">{{ frappe.format(h.holiday_date, {"fieldtype": "Date"}) }}</span><h3 style="margin-top:8px">{{ h.description }}</h3></div>{% endfor %}
+</div></section>
+{% endautoescape %}
+{% endblock %}

@@ -348,7 +348,13 @@ walkthrough update. Estimates assume one developer with AI assistance.
   every staff endpoint refuses patients
 - [ ] Online payment by bKash/Nagad/card, prescription and discharge
   summary downloads (Soon)
-- Public site: departments, doctors, events, gallery, FAQ, contact, booking
+- [x] Public website (Frappe www pages, visitors land on `/home`): home with
+  stats, departments, doctors, testimonials, events and call to action;
+  about, departments, doctors (with fees and Book), events, gallery, FAQ,
+  annual calendar, contact form and appointment request form (rate-limited
+  guest endpoint creating Website Enquiries for reception). All templates
+  autoescape. Front CMS registers for events, gallery, FAQ, testimonials and
+  enquiries; maps and instant online booking with SMS OTP marked Soon
 
 ### Phase 8: Reports, language, theme, demo polish (3 weeks)
 - All 16 report groups

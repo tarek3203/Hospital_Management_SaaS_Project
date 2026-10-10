@@ -61,6 +61,7 @@ MENU = [
 			{"key": "calls", "label": "Phone Call Log", "route": "/r/calls"},
 			{"key": "postal", "label": "Postal Receive / Dispatch", "route": "/r/postal"},
 			{"key": "complaints", "label": "Complaints", "route": "/r/complaints"},
+			{"key": "web-enquiries", "label": "Website Enquiries", "route": "/r/web-enquiries"},
 		],
 	},
 	{
@@ -134,7 +135,20 @@ MENU = [
 			{"key": "staff-id-card", "label": "Staff ID Card", "jobs": [SA, AD], "route": "/cards/staff"},
 		],
 	},
-	{"key": "front-cms", "label": "Front CMS", "icon": "globe", "jobs": [SA, AD], "phase": 7},
+	{
+		"key": "front-cms",
+		"label": "Front CMS",
+		"icon": "globe",
+		"jobs": [SA, AD],
+		"children": [
+			{"key": "web-site", "label": "View website", "desk": "/home"},
+			{"key": "web-enquiries", "label": "Enquiries", "route": "/r/web-enquiries"},
+			{"key": "web-events", "label": "Events", "route": "/r/web-events"},
+			{"key": "web-gallery", "label": "Gallery", "route": "/r/web-gallery"},
+			{"key": "web-faq", "label": "FAQ", "route": "/r/web-faq"},
+			{"key": "web-testimonials", "label": "Testimonials", "route": "/r/web-testimonials"},
+		],
+	},
 	{
 		"key": "live-consultation",
 		"label": "Live Consultation",

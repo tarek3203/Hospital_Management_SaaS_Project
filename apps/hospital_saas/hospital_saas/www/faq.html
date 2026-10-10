@@ -1,0 +1,10 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>Frequently asked questions</h1><p>Visiting hours, appointments, reports and payment</p></div></div>
+<section class="block"><div class="wrap grid g2">
+	<div>{% for f in faqs %}<details><summary>{{ f.question }}</summary><p style="color:var(--muted)">{{ f.answer }}</p></details>{% endfor %}</div>
+	<div>{% for t in testimonials %}<div class="card" style="margin-bottom:12px"><p class="stars">{{ "★" * t.rating }}</p><p class="quote">"{{ t.testimonial }}"</p><p style="margin-top:8px"><b>{{ t.patient_name }}</b></p></div>{% endfor %}</div>
+</div></section>
+{% endautoescape %}
+{% endblock %}

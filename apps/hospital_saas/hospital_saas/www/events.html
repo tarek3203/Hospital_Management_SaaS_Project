@@ -1,0 +1,10 @@
+{% extends "hospital_saas/templates/site/base.html" %}
+{% block content %}
+{% autoescape true %}
+<div class="page-head"><div class="wrap"><h1>Events</h1><p>Health camps, awareness programmes and hospital news</p></div></div>
+<section class="block"><div class="wrap grid g3">
+	{% for e in events %}<div class="card">{% if e.image %}<img src="{{ e.image }}" alt="" style="border-radius:8px;margin-bottom:10px" />{% endif %}<span class="tag">{{ frappe.format(e.event_date, {"fieldtype": "Date"}) }}</span><h3 style="margin-top:8px">{{ e.title }}</h3><p>{{ e.venue }}</p><p style="margin-top:6px">{{ e.summary }}</p></div>
+	{% else %}<p>No events right now.</p>{% endfor %}
+</div></section>
+{% endautoescape %}
+{% endblock %}
