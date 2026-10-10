@@ -39,6 +39,11 @@ const routes = [
 		meta: { bare: true },
 	},
 	{ path: "/cards/:kind", name: "IdCards", component: () => import("./pages/IdCards.vue"), props: true, meta: { bare: true } },
+	{ path: "/attendance", name: "Attendance", component: () => import("./pages/Attendance.vue") },
+	{ path: "/duty-roster", name: "DutyRoster", component: () => import("./pages/DutyRoster.vue") },
+	{ path: "/annual-calendar", name: "AnnualCalendar", component: () => import("./pages/AnnualCalendar.vue") },
+	{ path: "/branches", name: "Branches", component: () => import("./pages/Branches.vue") },
+	{ path: "/branches/report", name: "BranchReport", component: () => import("./pages/Branches.vue") },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

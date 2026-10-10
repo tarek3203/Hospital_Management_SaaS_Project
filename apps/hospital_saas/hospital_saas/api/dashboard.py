@@ -79,12 +79,19 @@ def daily_income_and_expense(days=30):
 	)
 	expense = dict(
 		frappe.db.sql(
-			"""select posting_date, sum(paid_amount) from `tabPayment Entry`
-			where docstatus = 1 and payment_type = 'Pay' and posting_date >= %s
-			group by posting_date""",
-			start,
+			"""select day, sum(amount) from (
+				select posting_date as day, paid_amount as amount from `tabPayment Entry`
+				where docstatus = 1 and payment_type = 'Pay' and posting_date >= %(start)s
+				union all
+				select expense_date, amount from `tabHospital Expense` where expense_date >= %(start)s
+			) e group by day""",
+			{"start": start},
 		)
 	)
+	for day, amount in frappe.db.sql(
+		"select income_date, sum(amount) from `tabHospital Income` where income_date >= %s group by income_date", start
+	):
+		income[day] = flt(income.get(day)) + flt(amount)
 	data = []
 	for i in range(days):
 		day = getdate(add_days(start, i))

@@ -119,7 +119,7 @@ const canNote = computed(() => ["Super Admin", "Admin", "Doctor", "Nurse", "Rece
 const SOON_HISTORY = []
 const HISTORY = {
 	Visits: { icon: "activity", bg: "bg-blue-50 text-blue-600" },
-	IPD: { icon: "layers", bg: "bg-emerald-50 text-emerald-600" },
+	IPD: { icon: "layers", bg: "bg-green-50 text-green-600" },
 	Pharmacy: { icon: "package", bg: "bg-amber-50 text-amber-600" },
 	Pathology: { icon: "droplet", bg: "bg-purple-50 text-purple-600" },
 	Radiology: { icon: "aperture", bg: "bg-teal-50 text-teal-600" },

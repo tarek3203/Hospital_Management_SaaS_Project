@@ -310,8 +310,20 @@ walkthrough update. Estimates assume one developer with AI assistance.
   on bills
 
 ### Phase 5: HR extras and finance (1 week)
-- QR attendance, duty roster, annual calendar, simplified income/expense,
-  multi-branch overview
+- [x] Attendance (`/hms/attendance`): daily status for all staff, check-in and
+  check-out times, mark attendance; QR kiosk mode (`?kiosk=1`) where a
+  scanner reads the staff ID card; phone camera scanning marked Soon
+- [x] Duty roster (`/hms/duty-roster`): weekly grid of Morning/Evening/Night
+  shifts from HRMS shift assignments; drag-and-drop editing marked Soon
+- [x] Annual calendar (`/hms/annual-calendar`): Bangladesh 2026-27 holidays
+- [x] Income and Expenses as registers (Hospital Income / Hospital Expense
+  DocTypes) that post Journal Entries to head accounts created on first use;
+  dashboard income/expense chart includes them
+- [x] Multi branch overview and report (`/hms/branches`): doctors, staff,
+  beds, admissions, appointments and OPD income per branch; branch P&L and
+  inter-branch transfers marked Soon
+- [x] Demo data: holidays, shifts and a week's roster, this morning's
+  check-ins, a month of expenses and other income
 
 ### Phase 6: Communication and content (2.5 weeks)
 - SMS gateway (BD provider), email, in-app notifications

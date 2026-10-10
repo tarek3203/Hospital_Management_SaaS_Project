@@ -78,10 +78,9 @@ MENU = [
 		"label": "Multi Branch",
 		"icon": "git-branch",
 		"jobs": [SA, AD],
-		"phase": 5,
 		"children": [
-			{"key": "branch-overview", "label": "Overview", "phase": 5},
-			{"key": "branch-report", "label": "Report", "phase": 5},
+			{"key": "branch-overview", "label": "Overview", "route": "/branches"},
+			{"key": "branch-report", "label": "Report", "route": "/branches/report"},
 			{"key": "branch-settings", "label": "Settings", "desk": "/desk/branch"},
 		],
 	},
@@ -93,10 +92,10 @@ MENU = [
 		"desk": "/desk/employee",
 		"children": [
 			{"key": "staff", "label": "Staff Directory", "desk": "/desk/employee"},
-			{"key": "qr-attendance", "label": "QR Code Attendance", "jobs": [SA, AD, DOC], "phase": 5},
-			{"key": "attendance", "label": "Attendance", "desk": "/desk/attendance"},
-			{"key": "duty-roster", "label": "Duty Roster", "jobs": [SA, AD], "phase": 5},
-			{"key": "annual-calendar", "label": "Annual Calendar", "jobs": [SA, AD], "desk": "/desk/holiday-list"},
+			{"key": "qr-attendance", "label": "QR Code Attendance", "jobs": [SA, AD, DOC], "route": "/attendance?kiosk=1"},
+			{"key": "attendance", "label": "Attendance", "route": "/attendance"},
+			{"key": "duty-roster", "label": "Duty Roster", "jobs": [SA, AD], "route": "/duty-roster"},
+			{"key": "annual-calendar", "label": "Annual Calendar", "jobs": [SA, AD], "route": "/annual-calendar"},
 		],
 	},
 	{
@@ -116,8 +115,8 @@ MENU = [
 		"icon": "dollar-sign",
 		"jobs": [SA, AD, ACC],
 		"children": [
-			{"key": "income", "label": "Income", "desk": "/desk/payment-entry?payment_type=Receive"},
-			{"key": "expenses", "label": "Expenses", "desk": "/desk/journal-entry"},
+			{"key": "income", "label": "Income", "route": "/r/income"},
+			{"key": "expenses", "label": "Expenses", "route": "/r/expenses"},
 		],
 	},
 	{"key": "survey", "label": "Survey Forms", "icon": "clipboard", "jobs": [SA, AD], "phase": 6},

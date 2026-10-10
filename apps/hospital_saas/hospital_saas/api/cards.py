@@ -54,6 +54,8 @@ def staff_cards(employees: list | str):
 	employees = frappe.parse_json(employees)[:30]
 	cards = []
 	for name in employees:
+		if not frappe.has_permission("Employee", "read", name):
+			frappe.throw(_("Not permitted"), frappe.PermissionError)
 		e = frappe.db.get_value(
 			"Employee", name, ["name", "employee_name", "designation", "department", "branch", "cell_number", "date_of_joining"], as_dict=True
 		)

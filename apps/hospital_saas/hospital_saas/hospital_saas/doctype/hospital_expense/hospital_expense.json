@@ -1,0 +1,122 @@
+{
+ "doctype": "DocType",
+ "name": "Hospital Expense",
+ "module": "Hospital SaaS",
+ "custom": 0,
+ "istable": 0,
+ "autoname": "format:EXP-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "title_field": "expense_head",
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "owner": "Administrator",
+ "creation": "2026-10-10 07:00:00.000000",
+ "modified": "2026-10-10 07:00:00.000000",
+ "field_order": [
+  "expense_head",
+  "paid_to",
+  "expense_date",
+  "amount",
+  "mode_of_payment",
+  "reference_no",
+  "note",
+  "journal_entry"
+ ],
+ "fields": [
+  {
+   "fieldname": "expense_head",
+   "fieldtype": "Select",
+   "label": "Expense head",
+   "options": "Electricity bill\nWater bill\nGenerator fuel\nMedical waste disposal\nCleaning supplies\nEquipment maintenance\nInternet and phone\nStationery\nOther expense",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "paid_to",
+   "fieldtype": "Data",
+   "label": "Paid to",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "expense_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1,
+   "in_list_view": 1,
+   "default": "Today"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of payment",
+   "options": "Mode of Payment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Bill / voucher no"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal entry",
+   "options": "Journal Entry",
+   "read_only": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Healthcare Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "print": 1,
+   "export": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "print": 1
+  }
+ ]
+}

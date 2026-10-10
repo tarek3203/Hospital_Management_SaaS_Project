@@ -190,6 +190,24 @@ OPERATIONS = [
 ]
 ANAESTHETISTS = ["Dr. Kazi Nurul Amin", "Dr. Selina Haque", "Dr. Mostafa Kamal"]
 
+# Public holidays for the July 2026 - June 2027 holiday list (Fridays are weekly off).
+PUBLIC_HOLIDAYS = [
+	("2026-10-20", "Durga Puja (Bijoya Dashami)"),
+	("2026-12-16", "Victory Day"),
+	("2026-12-25", "Christmas Day"),
+	("2027-02-21", "International Mother Language Day"),
+	("2027-03-09", "Eid ul-Fitr"),
+	("2027-03-10", "Eid ul-Fitr"),
+	("2027-03-11", "Eid ul-Fitr"),
+	("2027-03-26", "Independence Day"),
+	("2027-04-14", "Pohela Boishakh (Bengali New Year)"),
+	("2027-05-01", "May Day"),
+	("2027-05-16", "Eid ul-Adha"),
+	("2027-05-17", "Eid ul-Adha"),
+	("2027-05-20", "Buddha Purnima"),
+]
+SHIFTS = [("Morning", "08:00:00", "14:00:00", "Green"), ("Evening", "14:00:00", "20:00:00", "Blue"), ("Night", "20:00:00", "08:00:00", "Violet")]
+
 # Pharmacy items: (code, name, dosage form, rate, opening qty, reorder level)
 PHARMACY_ITEMS = [
 	("NAPA-500", "Napa 500mg (Paracetamol)", "Tablet", 1.2, 5000, 1000),

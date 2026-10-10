@@ -21,6 +21,8 @@ REGISTERS = {
 	"blood-bags": {"doctype": "Blood Bag", "title": "Blood Stock", "module": "Blood Bank", "stat": "blood_group", "stat_filter": {"status": "Available"}, "stat_label": "Available bags by group"},
 	"blood-donors": {"doctype": "Blood Donor", "title": "Blood Donors", "module": "Blood Bank", "stat": "blood_group"},
 	"blood-issues": {"doctype": "Blood Issue", "title": "Blood Issue", "module": "Blood Bank"},
+	"income": {"doctype": "Hospital Income", "title": "Income", "module": "Finance", "stat": "income_head"},
+	"expenses": {"doctype": "Hospital Expense", "title": "Expenses", "module": "Finance", "stat": "expense_head"},
 	"tpa": {"doctype": "TPA Organisation", "title": "TPA Management", "module": "TPA Management"},
 	"referral-persons": {"doctype": "Referral Person", "title": "Referral Persons", "module": "Referral", "stat": "category"},
 	"referral-payments": {"doctype": "Referral Payment", "title": "Referral Payments", "module": "Referral", "stat": "status"},

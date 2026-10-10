@@ -49,6 +49,8 @@ def run():
 		setup_pharmacy_bills,
 		restock_pharmacy,
 		setup_registers,
+		setup_hr_extras,
+		setup_finance_entries,
 		apply_branding,
 		set_anchor,
 	]
@@ -1368,3 +1370,84 @@ def setup_registers():
 			payment_date=inv.posting_date,
 			status=rng.choice(["Paid", "Paid", "Unpaid"]),
 		)
+
+
+def setup_hr_extras():
+	"""Holiday calendar, shifts and this week's duty roster, and this morning's check-ins."""
+	name = "Bangladesh 2026-27"
+	if not frappe.db.exists("Holiday List", name):
+		holidays = [{"holiday_date": d, "description": desc} for d, desc in D.PUBLIC_HOLIDAYS]
+		day = getdate("2026-07-01")
+		while day <= getdate("2027-06-30"):
+			if day.strftime("%A") == "Friday":
+				holidays.append({"holiday_date": day, "description": "Friday", "weekly_off": 1})
+			day = add_days(day, 1)
+		frappe.get_doc(
+			{"doctype": "Holiday List", "holiday_list_name": name, "from_date": "2026-07-01", "to_date": "2027-06-30", "holidays": holidays}
+		).insert(ignore_permissions=True)
+		frappe.db.set_value("Company", D.COMPANY, "default_holiday_list", name)
+
+	for shift, start, end, color in D.SHIFTS:
+		ensure("Shift Type", shift, __newname=shift, start_time=start, end_time=end, color=color, holiday_list=name)
+
+	if not frappe.db.exists("Shift Assignment", {"docstatus": 1}):
+		staff = frappe.get_all(
+			"Employee",
+			filters={"company": D.COMPANY, "designation": ["in", ["Senior Staff Nurse", "Staff Nurse", "Front Desk Executive", "Lab Technologist", "Pharmacist", "Radiologist"]]},
+			pluck="name",
+		)
+		week_start = add_days(nowdate(), -((getdate().weekday() + 2) % 7))
+		for i, emp in enumerate(staff):
+			for d in range(7):
+				day = add_days(week_start, d)
+				if d == 6 and i % 2:
+					continue  # alternate staff are off on Friday
+				shift = D.SHIFTS[(i + d // 2) % 3][0]
+				sa = frappe.get_doc(
+					{"doctype": "Shift Assignment", "employee": emp, "shift_type": shift, "company": D.COMPANY, "start_date": day, "end_date": day, "status": "Active"}
+				)
+				sa.insert(ignore_permissions=True)
+				sa.submit()
+
+	today = getdate()
+	if not frappe.db.exists("Employee Checkin", {"time": [">=", f"{today} 00:00:00"]}):
+		for emp in frappe.get_all("Employee", filters={"company": D.COMPANY, "status": "Active"}, pluck="name"):
+			if rng.random() < 0.15:
+				continue
+			frappe.get_doc(
+				{"doctype": "Employee Checkin", "employee": emp, "log_type": "IN", "time": datetime.combine(today, time(7, rng.randint(40, 59))) + timedelta(minutes=rng.randint(0, 35)), "device_id": "QR kiosk"}
+			).insert(ignore_permissions=True)
+			if not frappe.db.exists("Attendance", {"employee": emp, "attendance_date": today}):
+				att = frappe.get_doc({"doctype": "Attendance", "employee": emp, "attendance_date": today, "status": "Present", "company": D.COMPANY})
+				att.insert(ignore_permissions=True)
+				att.submit()
+
+
+def setup_finance_entries():
+	"""A month of running costs and other income, posted to the books."""
+	if frappe.db.count("Hospital Expense"):
+		return
+	monthly = [
+		("Electricity bill", "DESCO", 185000), ("Water bill", "Dhaka WASA", 22000), ("Internet and phone", "Link3 Technologies", 18000),
+		("Medical waste disposal", "PRISM Bangladesh", 35000),
+	]
+	frequent = [
+		("Generator fuel", "Padma Oil depot", 8000, 25000), ("Cleaning supplies", "ACI Consumer", 3000, 12000),
+		("Stationery", "Nilkhet Paper House", 1500, 6000), ("Equipment maintenance", "BioMed Services Ltd.", 5000, 40000),
+	]
+	for head, payee, amount in monthly:
+		frappe.get_doc(
+			{"doctype": "Hospital Expense", "expense_head": head, "paid_to": payee, "expense_date": add_days(nowdate(), -rng.randint(5, 25)), "amount": amount, "mode_of_payment": "Card", "reference_no": f"BILL-{rng.randint(10000, 99999)}"}
+		).insert(ignore_permissions=True)
+	for _ in range(18):
+		head, payee, low, high = rng.choice(frequent)
+		frappe.get_doc(
+			{"doctype": "Hospital Expense", "expense_head": head, "paid_to": payee, "expense_date": add_days(nowdate(), -rng.randint(0, 29)), "amount": rng.randint(low, high) // 100 * 100, "mode_of_payment": "Cash"}
+		).insert(ignore_permissions=True)
+	for head, payer, amount in [
+		("Canteen rent", "Rahman Food Corner", 60000), ("Pharmacy shop rent", "Lazz Pharma outlet", 85000),
+		("Training fee", "Nursing interns batch 12", 45000), ("Scrap sale", "Old Dhaka scrap dealer", 7500), ("Donation", "Anonymous donor", 100000),
+	]:
+		frappe.get_doc(
+			{"doctype": "Hospital Income", "income_head": head, "received_from": payer, "income_date": add_days(nowdate(), -rng.randint(1, 28)), "amount": amount, "mode_of_payment": "bKash" if amount < 50000 else "Card"}
+		).insert(ignore_permissions=True)
