@@ -114,6 +114,11 @@ def get_receipt(invoice: str):
 	require_staff()
 	si = frappe.get_doc("Sales Invoice", invoice)
 	si.check_permission("read")
+	return receipt_data(si)
+
+
+def receipt_data(si):
+	invoice = si.name
 	payments = frappe.db.sql(
 		"""select pe.name, pe.posting_date, pe.mode_of_payment, pe.reference_no, per.allocated_amount as amount
 		from `tabPayment Entry Reference` per join `tabPayment Entry` pe on pe.name = per.parent

@@ -47,11 +47,17 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRoute } from "vue-router"
 import { Button, createResource, FeatherIcon, LoadingIndicator } from "frappe-ui"
 import { session } from "@/data/session"
 
 const props = defineProps({ name: { type: String, required: true } })
-const test = createResource({ url: "hospital_saas.api.lab.get_test", makeParams: () => ({ name: props.name }), auto: true })
+const route = useRoute()
+const test = createResource({
+	url: route.meta.portal ? "hospital_saas.api.portal.get_lab_report" : "hospital_saas.api.lab.get_test",
+	makeParams: () => ({ name: props.name }),
+	auto: true,
+})
 const d = computed(() => test.data)
 const hospital = computed(() => session.data?.hospital || {})
 const print = () => window.print()

@@ -27,6 +27,7 @@ declare module 'vue' {
     PatientHeader: typeof import('./src/components/PatientHeader.vue')['default']
     PaymentDialog: typeof import('./src/components/PaymentDialog.vue')['default']
     PharmacyBillDialog: typeof import('./src/components/PharmacyBillDialog.vue')['default']
+    PortalBookDialog: typeof import('./src/components/PortalBookDialog.vue')['default']
     RecordDialog: typeof import('./src/components/RecordDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

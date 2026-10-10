@@ -85,7 +85,7 @@
   {
    "role": "Physician",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,
@@ -94,7 +94,7 @@
   {
    "role": "Nursing User",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,
@@ -103,7 +103,7 @@
   {
    "role": "Receptionist",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,
@@ -112,7 +112,7 @@
   {
    "role": "Accounts User",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,
@@ -121,7 +121,7 @@
   {
    "role": "Laboratory User",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,
@@ -130,7 +130,7 @@
   {
    "role": "Stock User",
    "read": 1,
-   "write": 1,
+   "write": 0,
    "create": 1,
    "delete": 0,
    "report": 1,

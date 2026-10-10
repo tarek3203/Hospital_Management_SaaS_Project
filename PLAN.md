@@ -339,8 +339,15 @@ walkthrough update. Estimates assume one developer with AI assistance.
 - [ ] Staff chat and calendar (topbar, marked Soon)
 
 ### Phase 7: Patient portal and public website (2 weeks)
-- Patient portal pages to match Smart Hospital's 11 patient menus, online
-  payment (bKash/Nagad)
+- [x] Patient portal inside `/hms` (patient demo login lands there): Smart
+  Hospital's patient menus (dashboard, appointments, OPD, IPD, pharmacy,
+  pathology, radiology, blood bank, ambulance, live consultation, download
+  center, surveys); book and cancel appointments from free slots, view lab
+  and radiology reports, print receipts, join video consultations, answer
+  surveys. Portal endpoints only ever read the logged-in patient's records;
+  every staff endpoint refuses patients
+- [ ] Online payment by bKash/Nagad/card, prescription and discharge
+  summary downloads (Soon)
 - Public site: departments, doctors, events, gallery, FAQ, contact, booking
 
 ### Phase 8: Reports, language, theme, demo polish (3 weeks)

@@ -5,7 +5,7 @@ Run from the host against a running demo site (standard library only):
 
 Checks per staff role: login lands on /hms, the session reports the right
 job, the sidebar has the Smart Hospital item count for that role, and the
-dashboard loads. The patient must land on the patient portal.
+dashboard loads. The patient must land on the /hms patient portal.
 """
 
 import http.cookiejar
@@ -64,9 +64,12 @@ def main():
 		if problems:
 			failures.append(user)
 
-	_opener, home = login("patient")
-	print(f"{'ok  ' if home == '/patient-portal' else 'FAIL'} {'patient':<12} home {home}")
-	if home != "/patient-portal":
+	opener, home = login("patient")
+	session = call(opener, "hospital_saas.api.session.get_session")
+	portal = call(opener, "hospital_saas.api.portal.get_dashboard")
+	ok = home == "/hms" and session["job"] == "Patient" and len(session["menu"]) == 12 and bool(portal["patient"]["name"])
+	print(f"{'ok  ' if ok else 'FAIL'} {'patient':<12} home {home}, menu {len(session['menu'])}")
+	if not ok:
 		failures.append("patient")
 
 	sys.exit(1 if failures else 0)

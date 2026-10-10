@@ -31,7 +31,10 @@ def get_job(user=None):
 		if job in STAFF:
 			return job
 	roles = set(frappe.get_roles(user))
-	return next((job for job, role in JOB_ROLES if role in roles), None)
+	job = next((job for job, role in JOB_ROLES if role in roles), None)
+	if not job and "Patient" in roles and frappe.db.exists("Patient", {"user_id": user}):
+		return "Patient"
+	return job
 
 
 def require_staff():
@@ -50,12 +53,14 @@ def get_session():
 		frappe.throw(frappe._("Your account has no hospital role."), frappe.PermissionError)
 	info = frappe.db.get_value("User", user, ["full_name", "user_image", "email"], as_dict=True)
 	practitioner = frappe.db.get_value("Healthcare Practitioner", {"user_id": user}, "name")
+	patient = frappe.db.get_value("Patient", {"user_id": user}, "name") if job == "Patient" else None
 	return {
 		"user": user,
 		"full_name": info.full_name,
 		"user_image": info.user_image,
 		"job": job,
 		"practitioner": practitioner,
+		"patient": patient,
 		"menu": menu_for(job),
 		"hospital": get_hospital_info(),
 		"demo_mode": bool(frappe.conf.get("hms_demo_mode")),

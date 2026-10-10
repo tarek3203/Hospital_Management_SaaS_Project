@@ -57,12 +57,18 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRoute } from "vue-router"
 import { Button, createResource, FeatherIcon, LoadingIndicator } from "frappe-ui"
 import { session } from "@/data/session"
 import { formatCurrency } from "@/utils"
 
 const props = defineProps({ invoice: { type: String, required: true } })
-const receipt = createResource({ url: "hospital_saas.api.billing.get_receipt", makeParams: () => ({ invoice: props.invoice }), auto: true })
+const route = useRoute()
+const receipt = createResource({
+	url: route.meta.portal ? "hospital_saas.api.portal.get_receipt" : "hospital_saas.api.billing.get_receipt",
+	makeParams: () => ({ invoice: props.invoice }),
+	auto: true,
+})
 const r = computed(() => receipt.data)
 const hospital = computed(() => session.data?.hospital || {})
 const print = () => window.print()

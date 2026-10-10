@@ -170,6 +170,11 @@ def get_survey(name: str):
 	require_staff()
 	survey = frappe.get_doc("Survey Form", name)
 	survey.check_permission("read")
+	return survey_data(survey)
+
+
+def survey_data(survey):
+	name = survey.name
 	questions = [q.strip() for q in (survey.questions or "").splitlines() if q.strip()]
 	responses = frappe.get_all("Survey Response", filters={"survey": name}, fields=["answers", "average_rating", "respondent", "comment", "response_date"], order_by="creation desc")
 	totals = [0.0] * len(questions)
@@ -193,9 +198,14 @@ def get_survey(name: str):
 @frappe.whitelist(methods=["POST"])
 def submit_survey(name: str, answers: list | str, respondent: str | None = None, comment: str | None = None):
 	require_staff()
-	answers = [max(1, min(5, int(a))) for a in frappe.parse_json(answers)]
 	survey = frappe.get_doc("Survey Form", name)
 	survey.check_permission("read")
+	return save_response(survey, answers, respondent, comment)
+
+
+def save_response(survey, answers, respondent=None, comment=None, ignore_permissions=False):
+	answers = [max(1, min(5, int(a))) for a in frappe.parse_json(answers)]
+	name = survey.name
 	doc = frappe.get_doc(
 		{
 			"doctype": "Survey Response",
@@ -206,5 +216,5 @@ def submit_survey(name: str, answers: list | str, respondent: str | None = None,
 			"comment": comment,
 		}
 	)
-	doc.insert()
+	doc.insert(ignore_permissions=ignore_permissions)
 	return doc.name

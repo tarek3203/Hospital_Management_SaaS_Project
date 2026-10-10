@@ -16,7 +16,7 @@ the login page shows a button per role, so visitors never need to type them.
 | `accountant@citycare.test` | Accountant | Selina Parvin |
 | `reception@citycare.test` | Receptionist | Rasel Mia |
 | `nurse@citycare.test` | Nurse | Rupa Akter |
-| `patient@citycare.test` | Patient | A patient with visits, labs and bills (patient portal) |
+| `patient@citycare.test` | Patient | A patient with visits, labs, bills and an admission (patient portal in /hms) |
 
 `Administrator` is the system super user; its password is in `infrastructure/.env`
 and is never shown on the demo.

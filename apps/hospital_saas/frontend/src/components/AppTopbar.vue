@@ -4,7 +4,7 @@
 			<FeatherIcon name="menu" class="h-5 w-5" />
 		</button>
 
-		<div class="relative hidden max-w-md flex-1 sm:block">
+		<div v-if="staff" class="relative hidden max-w-md flex-1 sm:block">
 			<FeatherIcon name="search" class="pointer-events-none absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
 			<input
 				v-model="search"
@@ -14,15 +14,15 @@
 				@keydown.enter="searchPatients"
 			/>
 		</div>
-		<div class="flex-1 sm:hidden" />
+		<div class="flex-1" :class="staff ? 'sm:hidden' : ''" />
 
-		<button class="rounded-md p-2 text-gray-600 hover:bg-gray-100" title="Bed status" @click="router.push('/beds')">
+		<button v-if="staff" class="rounded-md p-2 text-gray-600 hover:bg-gray-100" title="Bed status" @click="router.push('/beds')">
 			<FeatherIcon name="grid" class="h-4 w-4" />
 		</button>
-		<button class="hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 sm:block" title="Staff chat (coming soon)" @click="router.push('/module/chat')">
+		<button v-if="staff" class="hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 sm:block" title="Staff chat (coming soon)" @click="router.push('/module/chat')">
 			<FeatherIcon name="message-circle" class="h-4 w-4" />
 		</button>
-		<button class="hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 sm:block" title="Calendar (coming soon)" @click="router.push('/module/calendar')">
+		<button v-if="staff" class="hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 sm:block" title="Calendar (coming soon)" @click="router.push('/module/calendar')">
 			<FeatherIcon name="calendar" class="h-4 w-4" />
 		</button>
 		<Dropdown v-if="quickActions.length" :options="quickActions" placement="right">
@@ -67,10 +67,11 @@ const quickActions = computed(() => {
 	return actions
 })
 
-const userMenu = [
-	{ label: "Admin and setup (Desk)", icon: "settings", onClick: () => (window.location.href = "/desk") },
+const staff = computed(() => session.data.job !== "Patient")
+const userMenu = computed(() => [
+	...(staff.value ? [{ label: "Admin and setup (Desk)", icon: "settings", onClick: () => (window.location.href = "/desk") }] : []),
 	{ label: "Log out", icon: "log-out", onClick: logout },
-]
+])
 
 function searchPatients() {
 	router.push({ path: "/patients", query: { q: search.value } })

@@ -52,6 +52,7 @@
 		</nav>
 
 		<a
+			v-if="session.data.job !== 'Patient'"
 			href="/desk"
 			class="flex items-center gap-2 border-t border-white/10 px-5 py-3 text-xs text-gray-400 hover:text-white"
 		>

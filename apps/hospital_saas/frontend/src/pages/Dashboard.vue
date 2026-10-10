@@ -1,5 +1,6 @@
 <template>
-	<div class="mx-auto max-w-7xl space-y-5 p-4 sm:p-6">
+	<PortalDashboard v-if="session.data.job === 'Patient'" />
+	<div v-else class="mx-auto max-w-7xl space-y-5 p-4 sm:p-6">
 		<div>
 			<h1 class="text-xl font-semibold text-gray-900">Good {{ greeting }}, {{ firstName }}</h1>
 			<p class="text-sm text-gray-600">{{ session.data.job }} dashboard · {{ today }}</p>
@@ -36,11 +37,12 @@
 import { computed } from "vue"
 import { createResource, ErrorMessage, FeatherIcon, LoadingIndicator } from "frappe-ui"
 import StatCard from "@/components/StatCard.vue"
+import PortalDashboard from "@/pages/PortalDashboard.vue"
 import ChartCard from "@/components/ChartCard.vue"
 import DataTable from "@/components/DataTable.vue"
 import { session } from "@/data/session"
 
-const dashboard = createResource({ url: "hospital_saas.api.dashboard.get_dashboard", auto: true })
+const dashboard = createResource({ url: "hospital_saas.api.dashboard.get_dashboard", auto: session.data.job !== "Patient" })
 
 const firstName = computed(() => session.data.full_name.split(" ")[0])
 const greeting = computed(() => {

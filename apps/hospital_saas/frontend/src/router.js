@@ -45,6 +45,10 @@ const routes = [
 	{ path: "/branches", name: "Branches", component: () => import("./pages/Branches.vue") },
 	{ path: "/branches/report", name: "BranchReport", component: () => import("./pages/Branches.vue") },
 	{ path: "/survey/:name", name: "Survey", component: () => import("./pages/Survey.vue"), props: true },
+	{ path: "/portal/report/:name", name: "PortalReport", component: () => import("./pages/LabReport.vue"), props: true, meta: { bare: true, portal: true } },
+	{ path: "/portal/receipt/:invoice", name: "PortalReceipt", component: () => import("./pages/ReceiptPrint.vue"), props: true, meta: { bare: true, portal: true } },
+	{ path: "/portal/survey/:name", name: "PortalSurvey", component: () => import("./pages/Survey.vue"), props: true, meta: { portal: true } },
+	{ path: "/portal/:kind", name: "PortalList", component: () => import("./pages/PortalList.vue"), props: true },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

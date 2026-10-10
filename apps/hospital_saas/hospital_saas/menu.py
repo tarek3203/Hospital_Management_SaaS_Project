@@ -150,8 +150,27 @@ MENU = [
 ]
 
 
+# Patient portal: the eleven patient menus of the Smart Hospital demo.
+PATIENT_MENU = [
+	{"key": "dashboard", "label": "Dashboard", "icon": "home", "route": "/"},
+	{"key": "my-appointments", "label": "My Appointments", "icon": "calendar", "route": "/portal/appointments"},
+	{"key": "my-opd", "label": "OPD", "icon": "activity", "route": "/portal/opd"},
+	{"key": "my-ipd", "label": "IPD", "icon": "layers", "route": "/portal/ipd"},
+	{"key": "my-pharmacy", "label": "Pharmacy", "icon": "package", "route": "/portal/pharmacy"},
+	{"key": "my-pathology", "label": "Pathology", "icon": "droplet", "route": "/portal/pathology"},
+	{"key": "my-radiology", "label": "Radiology", "icon": "aperture", "route": "/portal/radiology"},
+	{"key": "my-blood-bank", "label": "Blood Bank", "icon": "heart", "route": "/portal/blood-bank"},
+	{"key": "my-ambulance", "label": "Ambulance", "icon": "truck", "route": "/portal/ambulance"},
+	{"key": "my-live", "label": "Live Consultation", "icon": "video", "route": "/portal/live"},
+	{"key": "my-downloads", "label": "Download Center", "icon": "download", "route": "/portal/downloads"},
+	{"key": "my-surveys", "label": "Survey Forms", "icon": "clipboard", "route": "/portal/surveys"},
+]
+
+
 def menu_for(job):
 	"""Menu entries (and children) visible to `job`."""
+	if job == "Patient":
+		return PATIENT_MENU
 	items = []
 	for item in MENU:
 		if job not in item["jobs"]:

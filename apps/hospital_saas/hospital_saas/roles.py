@@ -115,8 +115,8 @@ def setup_roles():
 		if frappe.db.exists("Role", role):
 			frappe.db.set_value("Role", role, "home_page", "/hms")
 
-	# Patients use Healthcare's portal, never the Desk.
-	frappe.db.set_value("Role", "Patient", {"desk_access": 0, "home_page": "/patient-portal"})
+	# Patients use the /hms patient portal, never the Desk.
+	frappe.db.set_value("Role", "Patient", {"desk_access": 0, "home_page": "/hms"})
 
 	profiles = dict(ROLE_PROFILES)
 	for profile, roles in ROLE_PROFILES.items():

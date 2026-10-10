@@ -13,8 +13,8 @@ def get_context(context):
 		frappe.local.flags.redirect_location = "/login?redirect-to=/hms"
 		raise frappe.Redirect
 	if not get_job():
-		# Patients and users without a hospital job use their own home page.
-		frappe.local.flags.redirect_location = "/patient-portal" if "Patient" in frappe.get_roles() else "/desk"
+		# Users without a hospital job (or a linked patient record) use the Desk.
+		frappe.local.flags.redirect_location = "/desk"
 		raise frappe.Redirect
 
 	csrf_token = frappe.sessions.get_csrf_token()

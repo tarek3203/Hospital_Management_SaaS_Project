@@ -52,6 +52,7 @@ def run():
 		setup_hr_extras,
 		setup_finance_entries,
 		setup_communication,
+		enrich_demo_patient,
 		apply_branding,
 		set_anchor,
 	]
@@ -1524,3 +1525,56 @@ def setup_communication():
 					"response_date": add_days(nowdate(), -rng.randint(0, 30)),
 				}
 			).insert(ignore_permissions=True)
+
+
+def enrich_demo_patient():
+	"""Give the patient demo login something in every portal section."""
+	email = next(u[0] for u in D.DEMO_USERS if u[3] == "Patient")
+	patient = frappe.db.get_value("Patient", {"user_id": email})
+	if not patient or frappe.db.exists("Live Meeting", {"patient": patient}):
+		return
+	docs = practitioners()
+	frappe.get_doc(
+		{"doctype": "Live Meeting", "title": "Follow-up video consultation", "meeting_type": "Consultation", "patient": patient, "doctor": docs[0].name, "meeting_date": getdate(), "meeting_time": time(19, 30), "duration": 20}
+	).insert(ignore_permissions=True)
+	vehicle = frappe.db.get_value("Ambulance Vehicle", {})
+	if vehicle:
+		frappe.get_doc(
+			{"doctype": "Ambulance Call", "patient": patient, "vehicle": vehicle, "call_date": add_days(nowdate(), -12), "pickup": "Mirpur, Dhaka", "destination": "CityCare Dhanmondi", "charge": 2000, "status": "Completed"}
+		).insert(ignore_permissions=True)
+	bag = frappe.db.get_value("Blood Bag", {"status": "Available"})
+	if bag:
+		frappe.get_doc({"doctype": "Blood Issue", "patient": patient, "bag": bag, "issue_date": add_days(nowdate(), -11), "charge": 1500}).insert(ignore_permissions=True)
+	test = frappe.get_doc(
+		{"doctype": "Lab Test", "patient": patient, "patient_sex": frappe.db.get_value("Patient", patient, "sex"), "template": "USG Whole Abdomen", "practitioner": docs[0].name, "company": D.COMPANY, "date": add_days(nowdate(), -3)}
+	).insert(ignore_permissions=True)
+	findings = dict(next(p for n, _r, p in D.RADIOLOGY_TESTS if n == "USG Whole Abdomen"))
+	for row in test.descriptive_test_items:
+		row.result_value = findings.get(row.lab_test_particulars, "Normal.")
+	test.result_date = add_days(nowdate(), -3)
+	test.save(ignore_permissions=True)
+	test.submit()
+	from hospital_saas.billing import create_invoice
+
+	store = frappe.db.get_value("Warehouse", {"warehouse_name": "Pharmacy DHN", "company": D.COMPANY})
+	create_invoice(
+		patient,
+		[{"item_code": "NAPA-500", "qty": 20, "rate": 1.2}, {"item_code": "SECLO-20", "qty": 14, "rate": 6}],
+		posting_date=add_days(nowdate(), -3),
+		mode_of_payment="bKash",
+		warehouse=store,
+		remarks="Pharmacy bill",
+	)
+	for title, ctype, url in [
+		("Diet chart for people with diabetes", "Training material", "https://citycare.test/patients/diabetes-diet"),
+		("Before your operation: what to expect", "Form", "https://citycare.test/patients/pre-op-guide"),
+	]:
+		frappe.get_doc({"doctype": "Shared Content", "title": title, "content_type": ctype, "audience": "Patients", "url": url}).insert(ignore_permissions=True)
+	slot_doctor = docs[1]
+	frappe.get_doc(
+		{
+			"doctype": "Patient Appointment", "patient": patient, "practitioner": slot_doctor.name, "department": slot_doctor.department,
+			"appointment_type": "Follow Up", "appointment_for": "Practitioner", "appointment_date": add_days(nowdate(), 3),
+			"appointment_time": time(18, 15), "duration": 15, "company": D.COMPANY,
+		}
+	).insert(ignore_permissions=True)

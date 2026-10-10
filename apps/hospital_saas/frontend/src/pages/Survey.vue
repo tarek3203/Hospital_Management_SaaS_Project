@@ -1,6 +1,6 @@
 <template>
 	<div class="mx-auto max-w-4xl space-y-4 p-4 sm:p-6">
-		<nav class="text-xs text-gray-500"><router-link to="/r/surveys" class="hover:text-gray-800">Survey Forms</router-link> / {{ name }}</nav>
+		<nav class="text-xs text-gray-500"><router-link :to="portal ? '/portal/surveys' : '/r/surveys'" class="hover:text-gray-800">Survey Forms</router-link> / {{ name }}</nav>
 		<div v-if="s.data" class="space-y-4">
 			<div class="rounded-lg border bg-white p-5">
 				<h1 class="text-xl font-semibold text-gray-900">{{ s.data.title }}</h1>
@@ -11,7 +11,7 @@
 			<div class="rounded-lg border bg-white">
 				<div class="flex border-b px-4"><TabBar v-model="tab" :tabs="[{ key: 'fill', label: 'Fill in' }, { key: 'results', label: 'Results' }]" /></div>
 				<div v-if="tab === 'fill'" class="space-y-4 p-4">
-					<FormControl v-model="respondent" label="Respondent (patient or staff name)" />
+					<FormControl v-if="!portal" v-model="respondent" label="Respondent (patient or staff name)" />
 					<div v-for="(q, i) in s.data.questions" :key="i">
 						<p class="mb-1.5 text-sm text-gray-800">{{ i + 1 }}. {{ q.text }}</p>
 						<div class="flex gap-1">
@@ -39,6 +39,7 @@
 
 <script setup>
 import { ref } from "vue"
+import { useRoute } from "vue-router"
 import { Button, createResource, ErrorMessage, FormControl, toast } from "frappe-ui"
 import SoonBadge from "@/components/SoonBadge.vue"
 import TabBar from "@/components/TabBar.vue"
@@ -48,9 +49,15 @@ const tab = ref("fill")
 const answers = ref([])
 const respondent = ref("")
 const comment = ref("")
-const s = createResource({ url: "hospital_saas.api.registers.get_survey", makeParams: () => ({ name: props.name }), auto: true })
+const route = useRoute()
+const portal = !!route.meta.portal
+const s = createResource({
+	url: portal ? "hospital_saas.api.portal.get_survey" : "hospital_saas.api.registers.get_survey",
+	makeParams: () => ({ name: props.name }),
+	auto: true,
+})
 const submit = createResource({
-	url: "hospital_saas.api.registers.submit_survey",
+	url: portal ? "hospital_saas.api.portal.submit_survey" : "hospital_saas.api.registers.submit_survey",
 	onSuccess() {
 		toast.success("Thank you, response saved")
 		answers.value = []
@@ -61,6 +68,7 @@ const submit = createResource({
 	},
 })
 function send() {
-	submit.submit({ name: props.name, answers: answers.value, respondent: respondent.value || null, comment: comment.value || null })
+	const params = { name: props.name, answers: answers.value, comment: comment.value || null }
+	submit.submit(portal ? params : { ...params, respondent: respondent.value || null })
 }
 </script>
