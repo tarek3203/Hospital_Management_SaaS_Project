@@ -50,6 +50,7 @@ const routes = [
 	{ path: "/portal/survey/:name", name: "PortalSurvey", component: () => import("./pages/Survey.vue"), props: true, meta: { portal: true } },
 	{ path: "/portal/:kind", name: "PortalList", component: () => import("./pages/PortalList.vue"), props: true },
 	{ path: "/reports", name: "Reports", component: () => import("./pages/Reports.vue") },
+	{ path: "/setup", name: "Setup", component: () => import("./pages/Setup.vue") },
 	{ path: "/module/:moduleKey", name: "ComingSoon", component: () => import("./pages/ComingSoon.vue"), props: true },
 	{ path: "/:pathMatch(.*)*", redirect: "/" },
 ]

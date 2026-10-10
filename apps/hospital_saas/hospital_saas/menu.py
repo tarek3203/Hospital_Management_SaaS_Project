@@ -160,7 +160,7 @@ MENU = [
 		],
 	},
 	{"key": "reports", "label": "Reports", "icon": "bar-chart-2", "jobs": STAFF, "route": "/reports"},
-	{"key": "setup", "label": "Setup", "icon": "settings", "jobs": STAFF, "desk": "/desk", "phase": 2},
+	{"key": "setup", "label": "Setup", "icon": "settings", "jobs": STAFF, "route": "/setup"},
 ]
 
 
