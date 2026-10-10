@@ -370,10 +370,15 @@ walkthrough update. Estimates assume one developer with AI assistance.
 - [ ] Theme studio (user menu, Soon)
 
 ### Phase 9: Packaging for single-hospital install (1.5 weeks)
-- One-command Docker install, first-run setup wizard
-- Update path with pre-update backup, scheduled backups, admin manual
-- Security hardening: no default credentials, strong admin password on
-  install, closed DB/Redis ports
+- [x] `infrastructure/install.sh`: one command for a hospital install or a
+  public demo (`--demo`); random passwords in a private `.env`, image
+  build, site creation, backup retention; Frappe's setup wizard does the
+  first-run hospital setup
+- [x] `infrastructure/upgrade.sh`: backup, pull, rebuild, migrate
+- [x] Hardening: compose refuses to start without passwords (no `admin`
+  defaults), only the web port published, install guide `docs/INSTALL.md`
+- [ ] Hospital-specific setup wizard steps in /hms (branches, beds, doctors
+  in one guided flow) - Soon
 
 **Total: about 21.5 weeks** (full Smart Hospital scope, nothing deferred).
 

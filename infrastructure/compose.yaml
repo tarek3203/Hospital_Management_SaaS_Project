@@ -41,8 +41,8 @@ services:
     entrypoint: [bash, -c]
     environment:
       SITE_NAME: ${SITE_NAME:-hms.localhost}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in infrastructure/.env}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in infrastructure/.env}
     command:
       - >
         wait-for-it -t 120 db:3306;
@@ -120,7 +120,7 @@ services:
     entrypoint: [bash, -c]
     environment:
       SITE_NAME: ${SITE_NAME:-hms.localhost}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in infrastructure/.env}
       RESET_INTERVAL_HOURS: ${RESET_INTERVAL_HOURS:-6}
     command:
       - >
@@ -145,7 +145,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in infrastructure/.env}
     volumes:
       - db-data:/var/lib/mysql
 
