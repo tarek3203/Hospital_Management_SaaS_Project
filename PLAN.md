@@ -357,12 +357,17 @@ walkthrough update. Estimates assume one developer with AI assistance.
   enquiries; maps and instant online booking with SMS OTP marked Soon
 
 ### Phase 8: Reports, language, theme, demo polish (3 weeks)
-- All 16 report groups
-- Language switcher with English, Bangla and the demo's other languages
-  (Hindi, Spanish, Indonesian, Portuguese, Arabic with right-to-left, French,
-  Turkish, Russian)
-- Theme studio
-- Final demo data pass, role-by-role regression run
+- [x] Reports (`/hms/reports`): one report for each Smart Hospital report
+  group (finance, appointment, OPD, IPD, pharmacy, pathology, radiology,
+  blood bank, ambulance, birth/death, HR, TPA, inventory, live
+  consultation, audit log, OT, patient), date range, CSV export, print;
+  finance, HR and audit log limited to the roles that see them. Custom
+  report builder in /hms marked Soon (Desk Report Builder works today)
+- [x] Demo data pass: occupations match ages, patients only in wards for
+  their gender
+- [ ] Language switcher (topbar, Soon): English, Bangla, Hindi, Spanish,
+  Indonesian, Portuguese, Arabic (right to left), French, Turkish, Russian
+- [ ] Theme studio (user menu, Soon)
 
 ### Phase 9: Packaging for single-hospital install (1.5 weeks)
 - One-command Docker install, first-run setup wizard

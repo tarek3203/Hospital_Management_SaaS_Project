@@ -25,6 +25,8 @@ const props = defineProps({ moduleKey: String })
 // Topbar tools that are not menu items.
 const EXTRA = {
 	chat: { label: "Staff chat", icon: "message-circle", phase: 6, text: "One-to-one and group chat between staff, with live updates." },
+	language: { label: "Languages", icon: "globe", phase: 8, text: "Switch the whole system between English, Bangla, Hindi, Spanish, Indonesian, Portuguese, Arabic (right to left), French, Turkish and Russian." },
+	theme: { label: "Theme studio", icon: "droplet", phase: 8, text: "Pick the hospital's colours, logo, light or dark mode and sidebar style without code." },
 	calendar: { label: "Calendar", icon: "calendar", phase: 6, text: "Appointments, operations, meetings and holidays on one calendar, with personal to-dos." },
 }
 const item = computed(() => {

@@ -54,6 +54,7 @@ def run():
 		setup_communication,
 		enrich_demo_patient,
 		setup_website_content,
+		tidy_demo_people,
 		apply_branding,
 		set_anchor,
 	]
@@ -458,7 +459,7 @@ def setup_patients(count=90):
 				"phone": "",
 				"email": "",
 				"marital_status": "Married" if age > 25 else "Single",
-				"occupation": rng.choice(["Service", "Business", "Student", "Homemaker", "Teacher", "Driver", "Retired"]),
+				"occupation": occupation_for(age),
 				"patient_details": f"Address: {rng.choice(D.AREAS)}",
 			}
 		)
@@ -1632,3 +1633,59 @@ def setup_website_content():
 			message=rng.choice(["Need a gynae appointment this week.", "Is the cardiology chamber open on Friday?", None, "Want a health check-up package."]),
 			status=rng.choice(["New", "New", "Contacted", "Booked"]),
 		)
+
+
+def occupation_for(age):
+	if age < 6:
+		return None
+	if age < 23:
+		return "Student"
+	if age >= 62:
+		return "Retired"
+	return rng.choice(["Service", "Business", "Homemaker", "Teacher", "Driver", "Banker", "Farmer"])
+
+
+def tidy_demo_people():
+	"""Make random demo data believable: occupations match ages, and nobody is
+	in a ward meant for the other gender."""
+	from hospital_saas.api.patients import age_from_dob
+	from hospital_saas.api.ipd import transfer
+
+	for p in frappe.get_all("Patient", fields=["name", "dob", "occupation"]):
+		age = age_from_dob(p.dob) or 30
+		if (age < 23 and p.occupation not in (None, "", "Student")) or (age < 6 and p.occupation):
+			frappe.db.set_value("Patient", p.name, "occupation", occupation_for(age), update_modified=False)
+
+	stays = frappe.db.sql(
+		"""select ir.name, p.sex, io.service_unit from `tabInpatient Record` ir
+		join `tabPatient` p on p.name = ir.patient
+		join `tabInpatient Occupancy` io on io.parent = ir.name and io.left = 0
+		where ir.status = 'Admitted'""",
+		as_dict=True,
+	)
+	for stay in stays:
+		wrong = ("Male General Ward" in stay.service_unit and stay.sex == "Female") or (
+			"Female General Ward" in stay.service_unit and stay.sex == "Male"
+		)
+		if not wrong:
+			continue
+		ward = "Female General Ward" if stay.sex == "Female" else "Male General Ward"
+		bed = frappe.db.get_value(
+			"Healthcare Service Unit",
+			{"healthcare_service_unit_name": ["like", f"{ward}%"], "occupancy_status": "Vacant", "is_group": 0},
+		) or frappe.db.get_value(
+			"Healthcare Service Unit",
+			{"service_unit_type": "Private Cabin", "occupancy_status": "Vacant", "is_group": 0},
+		)
+		if bed:
+			transfer(stay.name, bed)
+			# The move is a data fix, not a transfer the patient went through.
+			frappe.db.sql(
+				"""delete from `tabInpatient Occupancy` where parent = %s and service_unit = %s""",
+				(stay.name, stay.service_unit),
+			)
+			frappe.db.sql(
+				"""update `tabInpatient Occupancy` io join `tabInpatient Record` ir on ir.name = io.parent
+				set io.check_in = ir.admitted_datetime where io.parent = %s""",
+				stay.name,
+			)

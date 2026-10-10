@@ -19,6 +19,9 @@
 		<button v-if="staff" class="rounded-md p-2 text-gray-600 hover:bg-gray-100" title="Bed status" @click="router.push('/beds')">
 			<FeatherIcon name="grid" class="h-4 w-4" />
 		</button>
+		<button class="hidden items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 sm:flex" title="Language (Bangla and 8 more coming soon)" @click="router.push('/module/language')">
+			<FeatherIcon name="globe" class="h-4 w-4" /> EN
+		</button>
 		<button v-if="staff" class="hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 sm:block" title="Staff chat (coming soon)" @click="router.push('/module/chat')">
 			<FeatherIcon name="message-circle" class="h-4 w-4" />
 		</button>
@@ -70,6 +73,7 @@ const quickActions = computed(() => {
 const staff = computed(() => session.data.job !== "Patient")
 const userMenu = computed(() => [
 	...(staff.value ? [{ label: "Admin and setup (Desk)", icon: "settings", onClick: () => (window.location.href = "/desk") }] : []),
+	...(staff.value ? [{ label: "Theme studio (soon)", icon: "droplet", onClick: () => router.push("/module/theme") }] : []),
 	{ label: "Log out", icon: "log-out", onClick: logout },
 ])
 

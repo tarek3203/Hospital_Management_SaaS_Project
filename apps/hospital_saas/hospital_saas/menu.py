@@ -159,7 +159,7 @@ MENU = [
 			{"key": "live-meeting", "label": "Live Meeting", "route": "/r/live-meetings?type=Meeting"},
 		],
 	},
-	{"key": "reports", "label": "Reports", "icon": "bar-chart-2", "jobs": STAFF, "desk": "/desk/healthcare", "phase": 8},
+	{"key": "reports", "label": "Reports", "icon": "bar-chart-2", "jobs": STAFF, "route": "/reports"},
 	{"key": "setup", "label": "Setup", "icon": "settings", "jobs": STAFF, "desk": "/desk", "phase": 2},
 ]
 
