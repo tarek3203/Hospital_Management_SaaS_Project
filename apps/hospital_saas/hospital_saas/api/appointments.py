@@ -6,6 +6,7 @@ from frappe.utils import cint, flt, getdate, nowdate
 
 from hospital_saas.billing import create_invoice, default_company
 from hospital_saas.utils import hhmm
+from hospital_saas.api.session import require_staff
 
 LIST_FIELDS = [
 	"name",
@@ -32,6 +33,7 @@ def get_appointments(
 	start: int = 0,
 	page_length: int = 50,
 ):
+	require_staff()
 	filters = {"appointment_date": date or nowdate()}
 	if status:
 		filters["status"] = status
@@ -66,6 +68,7 @@ def get_appointments(
 
 @frappe.whitelist()
 def get_booking_options():
+	require_staff()
 	practitioners = frappe.get_list(
 		"Healthcare Practitioner",
 		fields=["name", "practitioner_name", "department", "op_consulting_charge", "designation"],
@@ -83,6 +86,7 @@ def get_booking_options():
 @frappe.whitelist()
 def get_slots(practitioner: str, date: str):
 	"""Bookable times for a doctor on a date, with how many are already booked."""
+	require_staff()
 	from healthcare.healthcare.doctype.patient_appointment.patient_appointment import get_available_slots
 
 	doctor = frappe.get_doc("Healthcare Practitioner", practitioner)
@@ -124,6 +128,7 @@ def book_appointment(
 	mode_of_payment: str | None = None,
 	paid_amount: float | None = None,
 ):
+	require_staff()
 	doctor = frappe.db.get_value(
 		"Healthcare Practitioner", practitioner, ["department", "op_consulting_charge"], as_dict=True
 	)
@@ -164,6 +169,7 @@ def book_appointment(
 
 @frappe.whitelist(methods=["POST"])
 def set_status(appointment: str, status: str):
+	require_staff()
 	from healthcare.healthcare.doctype.patient_appointment.patient_appointment import (
 		check_in_appointment,
 		update_status,

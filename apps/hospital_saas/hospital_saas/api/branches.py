@@ -4,10 +4,12 @@ import frappe
 from frappe.utils import flt, get_first_day, nowdate
 
 from hospital_saas.billing import default_company
+from hospital_saas.api.session import require_staff
 
 
 @frappe.whitelist()
 def get_overview():
+	require_staff()
 	if not {"Super Admin", "Hospital Admin", "System Manager"} & set(frappe.get_roles()):
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
 	company = default_company()

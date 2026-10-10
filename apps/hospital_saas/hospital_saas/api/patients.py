@@ -2,6 +2,7 @@
 
 import frappe
 from frappe.utils import add_months, cint, getdate, nowdate
+from hospital_saas.api.session import require_staff
 
 PATIENT_FIELDS = [
 	"name",
@@ -19,6 +20,7 @@ PATIENT_FIELDS = [
 
 @frappe.whitelist()
 def get_patients(search: str | None = None, start: int = 0, page_length: int = 20):
+	require_staff()
 	or_filters = None
 	if search:
 		like = f"%{search}%"
@@ -40,6 +42,7 @@ def get_patients(search: str | None = None, start: int = 0, page_length: int = 2
 @frappe.whitelist()
 def search_patients(txt: str = ""):
 	"""Lightweight lookup for pickers."""
+	require_staff()
 	like = f"%{txt}%"
 	return frappe.get_list(
 		"Patient",
@@ -64,6 +67,7 @@ def register_patient(
 	address: str | None = None,
 	marital_status: str | None = None,
 ):
+	require_staff()
 	if not dob and age:
 		dob = add_months(nowdate(), -12 * cint(age))
 	patient = frappe.get_doc(
@@ -86,6 +90,7 @@ def register_patient(
 
 @frappe.whitelist()
 def get_form_options():
+	require_staff()
 	return {
 		"genders": frappe.get_all("Gender", pluck="name", order_by="name"),
 		"blood_groups": ["A Positive", "A Negative", "B Positive", "B Negative", "O Positive", "O Negative", "AB Positive", "AB Negative"],

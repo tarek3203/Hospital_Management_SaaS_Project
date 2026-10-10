@@ -34,6 +34,14 @@ def get_job(user=None):
 	return next((job for job, role in JOB_ROLES if role in roles), None)
 
 
+def require_staff():
+	"""Every /hms staff endpoint starts with this. Patients (portal users) and
+	users without a hospital job are refused even where a DocType permission
+	would let them read, because several endpoints aggregate across patients."""
+	if not get_job() or get_job() == "Patient":
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
+
 @frappe.whitelist()
 def get_session():
 	user = frappe.session.user

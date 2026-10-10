@@ -5,6 +5,7 @@ from frappe import _
 from frappe.utils import flt
 
 from hospital_saas.utils import hhmm
+from hospital_saas.api.session import require_staff
 
 FIELDS = [
 	"name", "patient", "patient_name", "inpatient_record", "appointment", "operation_name", "category",
@@ -16,6 +17,7 @@ EDITABLE = [f for f in FIELDS if f not in ("name", "patient_name", "surgeon_name
 
 @frappe.whitelist()
 def get_operations(patient: str | None = None, record: str | None = None, appointment: str | None = None):
+	require_staff()
 	filters = {}
 	if record:
 		filters["inpatient_record"] = record
@@ -38,6 +40,7 @@ def get_operations(patient: str | None = None, record: str | None = None, appoin
 
 @frappe.whitelist(methods=["POST"])
 def save_operation(data: dict | str):
+	require_staff()
 	data = frappe.parse_json(data)
 	values = {k: data.get(k) for k in EDITABLE if k in data}
 	values["charge"] = flt(values.get("charge"))

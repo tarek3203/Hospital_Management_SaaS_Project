@@ -5,6 +5,7 @@ from frappe import _
 from frappe.utils import add_days, get_datetime, getdate, now_datetime, nowdate
 
 from hospital_saas.billing import default_company
+from hospital_saas.api.session import require_staff
 
 HR_ROLES = ("HR Manager", "HR User", "System Manager")
 
@@ -16,6 +17,7 @@ def require_hr():
 
 @frappe.whitelist()
 def get_attendance(date: str | None = None):
+	require_staff()
 	frappe.has_permission("Attendance", "read", throw=True)
 	day = getdate(date or nowdate())
 	employees = frappe.get_list(
@@ -55,6 +57,7 @@ def get_attendance(date: str | None = None):
 @frappe.whitelist(methods=["POST"])
 def qr_checkin(code: str):
 	"""Kiosk: the scanner types the employee ID from the staff card and presses Enter."""
+	require_staff()
 	require_hr()
 	code = (code or "").strip()
 	employee = frappe.db.get_value("Employee", {"name": code, "status": "Active"}, ["name", "employee_name"], as_dict=True)
@@ -79,6 +82,7 @@ def qr_checkin(code: str):
 
 @frappe.whitelist(methods=["POST"])
 def mark_attendance(employee: str, status: str, date: str | None = None):
+	require_staff()
 	require_hr()
 	if status not in ("Present", "Absent", "On Leave", "Half Day"):
 		frappe.throw(_("Invalid status"))
@@ -94,6 +98,7 @@ def mark_attendance(employee: str, status: str, date: str | None = None):
 
 @frappe.whitelist()
 def get_roster(start: str | None = None):
+	require_staff()
 	frappe.has_permission("Shift Assignment", "read", throw=True)
 	start = getdate(start or nowdate())
 	start = add_days(start, -((start.weekday() + 2) % 7))  # weeks start on Saturday
@@ -122,6 +127,7 @@ def get_roster(start: str | None = None):
 
 @frappe.whitelist()
 def get_calendar():
+	require_staff()
 	company_list = frappe.db.get_value("Company", default_company(), "default_holiday_list")
 	if not company_list:
 		return {"name": None, "holidays": []}

@@ -6,6 +6,7 @@ from frappe.utils import cint, flt, get_first_day, nowdate
 
 from hospital_saas.api.dashboard import MODULE_SQL
 from hospital_saas.billing import create_invoice
+from hospital_saas.api.session import require_staff
 
 # Billable item groups per billing module (Smart Hospital's "single module billing").
 MODULE_ITEM_GROUPS = {"OPD": ["Healthcare Services"], "Pathology": ["Laboratory"], "Radiology": ["Radiology"]}
@@ -13,6 +14,7 @@ MODULE_ITEM_GROUPS = {"OPD": ["Healthcare Services"], "Pathology": ["Laboratory"
 
 @frappe.whitelist()
 def get_billing_summary():
+	require_staff()
 	frappe.has_permission("Sales Invoice", "read", throw=True)
 	today = nowdate()
 	month_start = get_first_day(today)
@@ -33,6 +35,7 @@ def get_billing_summary():
 
 @frappe.whitelist()
 def get_bills(module: str | None = None, search: str | None = None, status: str | None = None, start: int = 0, page_length: int = 25):
+	require_staff()
 	frappe.has_permission("Sales Invoice", "read", throw=True)
 	conditions = ["si.docstatus = 1"]
 	values = {"start": cint(start), "page_length": cint(page_length)}
@@ -69,6 +72,7 @@ def get_bills(module: str | None = None, search: str | None = None, status: str 
 
 @frappe.whitelist()
 def get_billable_items(module: str = "OPD"):
+	require_staff()
 	groups = MODULE_ITEM_GROUPS.get(module)
 	if not groups:
 		frappe.throw(_("Billing for {0} is coming soon.").format(module))
@@ -85,6 +89,7 @@ def get_billable_items(module: str = "OPD"):
 
 @frappe.whitelist(methods=["POST"])
 def create_bill(patient: str, items: list | str, discount: float = 0, mode_of_payment: str | None = None, paid_amount: float | None = None, reference_no: str | None = None):
+	require_staff()
 	items = frappe.parse_json(items)
 	lines = [{"item_code": i["item_code"], "qty": flt(i.get("qty") or 1), "rate": flt(i.get("rate"))} for i in items if i.get("item_code")]
 	if not lines:
@@ -95,6 +100,7 @@ def create_bill(patient: str, items: list | str, discount: float = 0, mode_of_pa
 @frappe.whitelist()
 def find_case(number: str):
 	"""OPD number (appointment) or IPD number (inpatient record) -> where to bill it."""
+	require_staff()
 	number = (number or "").strip()
 	if frappe.db.exists("Patient Appointment", number):
 		return {"type": "opd", "name": number}
@@ -105,6 +111,7 @@ def find_case(number: str):
 
 @frappe.whitelist()
 def get_receipt(invoice: str):
+	require_staff()
 	si = frappe.get_doc("Sales Invoice", invoice)
 	si.check_permission("read")
 	payments = frappe.db.sql(

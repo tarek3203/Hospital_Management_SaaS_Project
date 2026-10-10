@@ -15,6 +15,7 @@ from frappe.utils import cint, flt, get_datetime, getdate, now_datetime, nowdate
 from hospital_saas.api.opd import check_patient, distinct_children, ensure_masters, patient_header
 from hospital_saas.billing import default_company
 from hospital_saas.utils import hhmm
+from hospital_saas.api.session import require_staff
 
 ACTIVE = ("Admitted", "Discharge Scheduled")
 
@@ -24,6 +25,7 @@ ACTIVE = ("Admitted", "Discharge Scheduled")
 
 @frappe.whitelist()
 def get_ipd_patients(status: str = "Admitted", search: str | None = None):
+	require_staff()
 	filters = {"status": ["in", ACTIVE]} if status == "Admitted" else {"status": "Discharged"}
 	or_filters = None
 	if search:
@@ -77,6 +79,7 @@ def length_of_stay(admitted, discharged=None):
 @frappe.whitelist()
 def get_bed_board():
 	"""Branch > floor > ward > beds, with who is in each occupied bed."""
+	require_staff()
 	frappe.has_permission("Healthcare Service Unit", "read", throw=True)
 	units = frappe.get_all(
 		"Healthcare Service Unit",
@@ -132,6 +135,7 @@ def strip_branch(name):
 
 @frappe.whitelist()
 def get_admission_options():
+	require_staff()
 	beds = frappe.get_all(
 		"Healthcare Service Unit",
 		filters={"inpatient_occupancy": 1, "is_group": 0, "occupancy_status": "Vacant"},
@@ -156,6 +160,7 @@ def get_admission_options():
 
 @frappe.whitelist(methods=["POST"])
 def admit(patient: str, bed: str, practitioner: str, expected_length_of_stay: int = 3, note: str | None = None, appointment: str | None = None, advance: float = 0, mode_of_payment: str | None = None):
+	require_staff()
 	from healthcare.healthcare.doctype.inpatient_record.inpatient_record import admit_patient
 
 	frappe.has_permission("Inpatient Record", "create", throw=True)
@@ -186,6 +191,7 @@ def admit(patient: str, bed: str, practitioner: str, expected_length_of_stay: in
 
 @frappe.whitelist(methods=["POST"])
 def transfer(record: str, bed: str):
+	require_staff()
 	from healthcare.healthcare.doctype.inpatient_record.inpatient_record import transfer_patient
 
 	doc = frappe.get_doc("Inpatient Record", record)
@@ -201,6 +207,7 @@ def transfer(record: str, bed: str):
 @frappe.whitelist(methods=["POST"])
 def discharge(record: str, summary: str | None = None, followup_date: str | None = None, mode_of_payment: str | None = None):
 	"""Final bill (advances applied automatically), free the bed, mark discharged."""
+	require_staff()
 	from healthcare.healthcare.doctype.inpatient_record.inpatient_record import discharge_patient
 
 	doc = frappe.get_doc("Inpatient Record", record)
@@ -253,6 +260,7 @@ def make_final_bill(doc, mode_of_payment=None):
 
 @frappe.whitelist()
 def get_stay(record: str):
+	require_staff()
 	doc = frappe.get_doc("Inpatient Record", record)
 	doc.check_permission("read")
 	check_patient(doc.patient)
@@ -434,6 +442,7 @@ def nurse_notes(record):
 
 @frappe.whitelist(methods=["POST"])
 def add_nurse_note(record: str, note: str):
+	require_staff()
 	doc = frappe.get_doc("Inpatient Record", record)
 	doc.check_permission("read")
 	check_patient(doc.patient)
@@ -455,6 +464,7 @@ def add_nurse_note(record: str, note: str):
 @frappe.whitelist(methods=["POST"])
 def add_advance(record: str, amount: float, mode_of_payment: str, reference_no: str | None = None):
 	"""Deposit against the stay; applied to the final bill at discharge."""
+	require_staff()
 	frappe.has_permission("Payment Entry", "create", throw=True)
 	frappe.get_doc("Inpatient Record", record).check_permission("read")
 	return make_advance(record, amount, mode_of_payment, reference_no)
@@ -492,6 +502,7 @@ def make_advance(record, amount, mode_of_payment, reference_no=None, posting_dat
 @frappe.whitelist(methods=["POST"])
 def save_round(record: str, data: dict | str):
 	"""Doctor's ward round: a submitted encounter linked to the stay."""
+	require_staff()
 	from hospital_saas.api.lab import create_ordered_tests
 
 	data = frappe.parse_json(data)
@@ -531,6 +542,7 @@ def save_round(record: str, data: dict | str):
 
 @frappe.whitelist(methods=["POST"])
 def add_ipd_vitals(record: str, **values):
+	require_staff()
 	doc = frappe.get_doc("Inpatient Record", record)
 	doc.check_permission("read")
 	vitals = frappe.get_doc(

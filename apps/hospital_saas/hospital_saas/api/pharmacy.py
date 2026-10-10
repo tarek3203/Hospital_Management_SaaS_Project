@@ -8,12 +8,14 @@ from frappe import _
 from frappe.utils import cint, flt
 
 from hospital_saas.billing import create_invoice, default_company
+from hospital_saas.api.session import require_staff
 
 GROUP = "Pharmacy"
 
 
 @frappe.whitelist()
 def get_stores():
+	require_staff()
 	return frappe.get_all(
 		"Warehouse",
 		filters={"company": default_company(), "is_group": 0, "warehouse_name": ["like", "Pharmacy%"]},
@@ -24,6 +26,7 @@ def get_stores():
 
 @frappe.whitelist()
 def get_medicines(warehouse: str | None = None, search: str | None = None):
+	require_staff()
 	frappe.has_permission("Item", "read", throw=True)
 	conditions, values = ["i.item_group = %(group)s", "i.disabled = 0"], {"group": GROUP, "warehouse": warehouse}
 	if search:
@@ -60,6 +63,7 @@ def qty_for(dosage, period):
 @frappe.whitelist()
 def get_prescription(patient: str):
 	"""Medicines from the patient's latest consultation or ward round."""
+	require_staff()
 	frappe.has_permission("Patient", "read", patient, throw=True)
 	enc = frappe.get_all(
 		"Patient Encounter",
@@ -84,6 +88,7 @@ def get_prescription(patient: str):
 
 @frappe.whitelist(methods=["POST"])
 def create_pharmacy_bill(patient: str, warehouse: str, items: list | str, discount: float = 0, mode_of_payment: str | None = None, paid_amount: float | None = None):
+	require_staff()
 	items = frappe.parse_json(items)
 	lines = [{"item_code": i["item_code"], "qty": flt(i.get("qty") or 1), "rate": flt(i.get("rate"))} for i in items if i.get("item_code")]
 	if not lines:
@@ -95,6 +100,7 @@ def create_pharmacy_bill(patient: str, warehouse: str, items: list | str, discou
 
 @frappe.whitelist()
 def get_pharmacy_summary():
+	require_staff()
 	from frappe.utils import get_first_day, nowdate
 
 	def total(since):

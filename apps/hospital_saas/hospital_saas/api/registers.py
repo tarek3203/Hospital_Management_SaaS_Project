@@ -8,6 +8,7 @@ DocType's meta, so adding a register is one entry in REGISTERS.
 import frappe
 from frappe import _
 from frappe.utils import cint
+from hospital_saas.api.session import require_staff
 
 REGISTERS = {
 	"visitors": {"doctype": "Visitor Entry", "title": "Visitor Book", "module": "Front Office", "stat": "purpose"},
@@ -66,6 +67,7 @@ def field_meta(doctype):
 
 @frappe.whitelist()
 def get_register(key: str, search: str | None = None, start: int = 0, page_length: int = 50):
+	require_staff()
 	config = get_config(key)
 	doctype = config["doctype"]
 	meta, fields = field_meta(doctype)
@@ -113,6 +115,7 @@ def get_register(key: str, search: str | None = None, start: int = 0, page_lengt
 
 @frappe.whitelist(methods=["POST"])
 def save_record(key: str, data: dict | str):
+	require_staff()
 	config = get_config(key)
 	data = frappe.parse_json(data)
 	_meta, fields = field_meta(config["doctype"])
@@ -130,6 +133,7 @@ def save_record(key: str, data: dict | str):
 
 @frappe.whitelist()
 def get_record(key: str, name: str):
+	require_staff()
 	config = get_config(key)
 	doc = frappe.get_doc(config["doctype"], name)
 	doc.check_permission("read")
@@ -139,6 +143,7 @@ def get_record(key: str, name: str):
 @frappe.whitelist()
 def search_link(doctype: str, txt: str = ""):
 	"""Options for a Link field in a register form."""
+	require_staff()
 	allowed = {f["options"] for c in REGISTERS.values() for f in field_meta(c["doctype"])[1] if f["fieldtype"] == "Link"}
 	if doctype not in allowed:
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
@@ -162,6 +167,7 @@ def search_link(doctype: str, txt: str = ""):
 
 @frappe.whitelist()
 def get_survey(name: str):
+	require_staff()
 	survey = frappe.get_doc("Survey Form", name)
 	survey.check_permission("read")
 	questions = [q.strip() for q in (survey.questions or "").splitlines() if q.strip()]
@@ -186,6 +192,7 @@ def get_survey(name: str):
 
 @frappe.whitelist(methods=["POST"])
 def submit_survey(name: str, answers: list | str, respondent: str | None = None, comment: str | None = None):
+	require_staff()
 	answers = [max(1, min(5, int(a))) for a in frappe.parse_json(answers)]
 	survey = frappe.get_doc("Survey Form", name)
 	survey.check_permission("read")

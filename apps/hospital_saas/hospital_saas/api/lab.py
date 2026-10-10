@@ -12,6 +12,7 @@ from frappe.utils import cint, now_datetime, nowdate, nowtime
 from hospital_saas.api.opd import check_patient, patient_header
 from hospital_saas.billing import default_company
 from hospital_saas.utils import hhmm
+from hospital_saas.api.session import require_staff
 
 RADIOLOGY_GROUP = "Radiology"
 
@@ -32,6 +33,7 @@ def display_status(test):
 
 @frappe.whitelist()
 def get_worklist(section: str = "Pathology", status: str | None = None, search: str | None = None, start: int = 0, page_length: int = 50):
+	require_staff()
 	filters = {"lab_test_group": section_filter(section), "docstatus": ["!=", 2]}
 	if status == "Pending":
 		filters["docstatus"] = 0
@@ -66,6 +68,7 @@ def get_worklist(section: str = "Pathology", status: str | None = None, search: 
 
 @frappe.whitelist()
 def get_templates(section: str = "Pathology"):
+	require_staff()
 	return frappe.get_all(
 		"Lab Test Template",
 		filters={"disabled": 0, "lab_test_group": section_filter(section)},
@@ -76,6 +79,7 @@ def get_templates(section: str = "Pathology"):
 
 @frappe.whitelist()
 def get_test(name: str):
+	require_staff()
 	test = frappe.get_doc("Lab Test", name)
 	test.check_permission("read")
 	check_patient(test.patient)
@@ -123,6 +127,7 @@ def get_test(name: str):
 
 @frappe.whitelist(methods=["POST"])
 def save_results(name: str, results: list | str, comment: str | None = None, submit: int = 0):
+	require_staff()
 	results = {r["name"]: r.get("value") for r in frappe.parse_json(results)}
 	test = frappe.get_doc("Lab Test", name)
 	if test.docstatus != 0:
@@ -140,6 +145,7 @@ def save_results(name: str, results: list | str, comment: str | None = None, sub
 
 @frappe.whitelist(methods=["POST"])
 def approve(name: str):
+	require_staff()
 	from healthcare.healthcare.doctype.lab_test.lab_test import update_status
 
 	if "LabTest Approver" not in frappe.get_roles():
@@ -154,6 +160,7 @@ def approve(name: str):
 
 @frappe.whitelist(methods=["POST"])
 def create_test(patient: str, template: str, practitioner: str | None = None):
+	require_staff()
 	frappe.has_permission("Lab Test", "create", throw=True)
 	test = frappe.get_doc(
 		{

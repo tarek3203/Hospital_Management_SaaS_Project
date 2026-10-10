@@ -12,6 +12,7 @@ from frappe.utils import cint, flt, getdate, nowdate, nowtime
 from hospital_saas.api.patients import age_from_dob
 from hospital_saas.billing import default_company
 from hospital_saas.utils import hhmm
+from hospital_saas.api.session import require_staff
 
 
 def check_patient(patient):
@@ -25,6 +26,7 @@ def check_patient(patient):
 @frappe.whitelist()
 def get_opd_patients(search: str | None = None, start: int = 0, page_length: int = 20):
 	"""Patients with at least one OPD visit, latest visit first."""
+	require_staff()
 	frappe.has_permission("Patient", "read", throw=True)
 	# The site's date, not the database server's (MariaDB runs in UTC).
 	conditions, values = "", {"start": cint(start), "page_length": cint(page_length), "today": nowdate()}
@@ -81,6 +83,7 @@ def patient_header(patient):
 
 @frappe.whitelist()
 def get_patient_profile(patient: str):
+	require_staff()
 	check_patient(patient)
 	header = patient_header(patient)
 	encounters = frappe.get_list(
@@ -132,6 +135,7 @@ def pharmacy_bill_count(patient):
 
 @frappe.whitelist()
 def get_patient_visits(patient: str):
+	require_staff()
 	check_patient(patient)
 	visits = frappe.get_list(
 		"Patient Appointment",
@@ -164,6 +168,7 @@ def get_patient_visits(patient: str):
 
 @frappe.whitelist()
 def get_patient_labs(patient: str):
+	require_staff()
 	check_patient(patient)
 	return frappe.get_list(
 		"Lab Test",
@@ -176,6 +181,7 @@ def get_patient_labs(patient: str):
 
 @frappe.whitelist()
 def get_patient_vitals(patient: str, appointment: str | None = None):
+	require_staff()
 	check_patient(patient)
 	filters = {"patient": patient, "docstatus": ["!=", 2]}
 	if appointment:
@@ -200,6 +206,7 @@ def get_patient_vitals(patient: str, appointment: str | None = None):
 @frappe.whitelist()
 def get_patient_timeline(patient: str):
 	"""Medical record entries, described in one line each (newest first)."""
+	require_staff()
 	check_patient(patient)
 	rows = frappe.db.sql(
 		"""select name, communication_date as date, subject, reference_doctype, reference_name, owner
@@ -243,6 +250,7 @@ def describe_record(row):
 
 @frappe.whitelist(methods=["POST"])
 def add_timeline_note(patient: str, note: str, date: str | None = None):
+	require_staff()
 	check_patient(patient)
 	doc = frappe.get_doc(
 		{
@@ -262,6 +270,7 @@ def add_timeline_note(patient: str, note: str, date: str | None = None):
 
 @frappe.whitelist()
 def get_visit(appointment: str):
+	require_staff()
 	appt = frappe.get_doc("Patient Appointment", appointment)
 	appt.check_permission("read")
 	check_patient(appt.patient)
@@ -361,6 +370,7 @@ def consultation_data(encounter):
 
 @frappe.whitelist()
 def get_consultation_options():
+	require_staff()
 	return {
 		"complaints": frappe.get_all("Complaint", pluck="name", order_by="name"),
 		"diagnoses": frappe.get_all("Diagnosis", pluck="name", order_by="name"),
@@ -382,6 +392,7 @@ def get_consultation_options():
 @frappe.whitelist(methods=["POST"])
 def save_consultation(appointment: str, data: dict | str, submit: int = 0):
 	"""Create or update the visit's Patient Encounter; submit to finalise it."""
+	require_staff()
 	from hospital_saas.api.lab import create_ordered_tests
 
 	data = frappe.parse_json(data)
@@ -450,6 +461,7 @@ def ensure_masters(doctype, fieldname, values):
 
 @frappe.whitelist(methods=["POST"])
 def add_vitals(appointment: str, temperature=None, pulse=None, respiratory_rate=None, bp_systolic=None, bp_diastolic=None, height=None, weight=None, note=None):
+	require_staff()
 	appt = frappe.get_doc("Patient Appointment", appointment)
 	appt.check_permission("read")
 	vitals = frappe.get_doc(
@@ -477,6 +489,7 @@ def add_vitals(appointment: str, temperature=None, pulse=None, respiratory_rate=
 
 @frappe.whitelist(methods=["POST"])
 def add_payment(invoice: str, amount: float, mode_of_payment: str, reference_no: str | None = None):
+	require_staff()
 	from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
 	frappe.get_doc("Sales Invoice", invoice).check_permission("read")
@@ -501,6 +514,7 @@ def add_payment(invoice: str, amount: float, mode_of_payment: str, reference_no:
 
 @frappe.whitelist(methods=["POST"])
 def update_allergies(patient: str, allergies: str | None = None):
+	require_staff()
 	doc = frappe.get_doc("Patient", patient)
 	doc.allergies = allergies
 	doc.save()

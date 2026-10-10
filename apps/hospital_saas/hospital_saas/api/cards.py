@@ -6,6 +6,7 @@ import frappe
 from frappe import _
 
 from hospital_saas.api.patients import age_from_dob
+from hospital_saas.api.session import require_staff
 
 
 def qr_svg(text):
@@ -28,6 +29,7 @@ def barcode_svg(text):
 
 @frappe.whitelist()
 def patient_cards(patients: list | str):
+	require_staff()
 	patients = frappe.parse_json(patients)[:30]
 	cards = []
 	for name in patients:
@@ -50,6 +52,7 @@ def patient_cards(patients: list | str):
 
 @frappe.whitelist()
 def staff_cards(employees: list | str):
+	require_staff()
 	frappe.has_permission("Employee", "read", throw=True)
 	employees = frappe.parse_json(employees)[:30]
 	cards = []
@@ -77,6 +80,7 @@ def staff_cards(employees: list | str):
 
 @frappe.whitelist()
 def search_employees(txt: str = ""):
+	require_staff()
 	like = f"%{txt}%"
 	return frappe.get_list(
 		"Employee",

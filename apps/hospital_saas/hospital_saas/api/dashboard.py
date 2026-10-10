@@ -7,7 +7,7 @@ Every job gets the same response shape so one Vue page renders them all:
 import frappe
 from frappe.utils import add_days, flt, get_first_day, getdate, nowdate
 
-from hospital_saas.api.session import get_job
+from hospital_saas.api.session import require_staff, get_job
 from hospital_saas.utils import hhmm
 
 # Income module per invoice line: item_group decides, OPD/IPD split by item.
@@ -27,6 +27,7 @@ MODULES = ["OPD", "IPD", "Pharmacy", "Pathology", "Radiology", "Other"]
 
 @frappe.whitelist()
 def get_dashboard():
+	require_staff()
 	job = get_job()
 	builder = {
 		"Super Admin": admin_dashboard,
